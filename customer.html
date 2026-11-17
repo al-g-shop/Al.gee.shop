@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>알지언니샵 - 주문조회</title>
+  <style>
+    body { font-family: sans-serif; background: #f8f9fa; margin: 0; padding: 15px; color: #333; }
+    .card { max-width: 500px; margin: 0 auto 15px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .header-nav { max-width: 500px; margin: 0 auto 15px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { text-decoration: none; color: #e63946; font-weight: bold; font-size: 14px; }
+    h2 { font-size: 18px; margin-top: 0; color: #111; }
+    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    button { width: 100%; padding: 12px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .order-item { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-top: 15px; }
+    .order-item p { margin: 6px 0; font-size: 14px; }
+    .order-no { color: #e63946; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="header-nav">
+    <span><b>알지언니샵</b> ♡ 주문조회</span>
+    <a href="index.html">← 주문서 작성하러 가기</a>
+  </div>
+
+  <div class="card">
+    <h2>🔍 내 주문 내역 조회</h2>
+    <p style="font-size: 13px; color: #666;">주문 시 입력하셨던 <b>연락처</b>를 입력해 주세요.</p>
+    <input type="tel" id="searchPhone" placeholder="연락처 (예: 01012345678)">
+    <button onclick="searchMyOrder()">주문 조회하기</button>
+    
+    <div id="resultArea"></div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
+
+    async function searchMyOrder() {
+      const phone = document.getElementById('searchPhone').value.trim();
+      if (!phone) return alert('연락처를 입력해주세요.');
+
+      const resultArea = document.getElementById('resultArea');
+      resultArea.innerHTML = '<p style="text-align:center; color:#888; margin-top:15px;">조회 중입니다...</p>';
+
+      try {
+        const res = await fetch(`${API_URL}?action=search&phone=${encodeURIComponent(phone)}`);
+        const data = await res.json();
+
+        resultArea.innerHTML = '';
+        if(data.orders && data.orders.length > 0) {
+          data.orders.forEach(ord => {
+            resultArea.innerHTML += `
+              <div class="order-item">
+                <p>주문번호: <span class="order-no">${ord.orderNo}</span></p>
+                <p>접수일시: ${ord.date}</p>
+                <p>수령인: <b>${ord.name}</b></p>
+                <p>배송지: ${ord.address}</p>
+                <p>주문상품: ${ord.items}</p>
+                <p><b>총 결제금액: ${Number(ord.totalPrice).toLocaleString()}원</b></p>
+              </div>
+            `;
+          });
+        } else {
+          resultArea.innerHTML = '<p style="text-align:center; color:#e63946; margin-top:15px;">일치하는 주문 내역이 없습니다.</p>';
+        }
+      } catch(e) {
+        resultArea.innerHTML = '<p style="text-align:center; color:#e63946; margin-top:15px;">조회 중 오류가 발생했습니다.</p>';
+      }
+    }
+  </script>
+</body>
+</html>

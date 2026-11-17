@@ -3,34 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>알지언니샵 - 주문조회</title>
+  <title>알지언니Live♡ - 주문조회</title>
   <style>
-    body { font-family: sans-serif; background: #f8f9fa; margin: 0; padding: 15px; color: #333; }
-    .card { max-width: 500px; margin: 0 auto 15px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    .header-nav { max-width: 500px; margin: 0 auto 15px; display: flex; justify-content: space-between; align-items: center; }
-    .header-nav a { text-decoration: none; color: #e63946; font-weight: bold; font-size: 14px; }
-    h2 { font-size: 18px; margin-top: 0; color: #111; }
+    :root { --primary: #e63946; --bg: #f8f9fa; --card-bg: #fff; --text: #333; --border: #eee; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
+    .container { max-width: 520px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+    .header h1 { font-size: 18px; margin: 0; color: var(--primary); font-weight: 800; }
+    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: #555; background: #fff; padding: 6px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card { background: var(--card-bg); padding: 20px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    h2 { font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #111; }
+    p { font-size: 13px; color: #666; line-height: 1.4; margin-top: 0; }
     input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
     button { width: 100%; padding: 12px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
-    .order-item { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-top: 15px; }
-    .order-item p { margin: 6px 0; font-size: 14px; }
-    .order-no { color: #e63946; font-weight: bold; }
+    .order-item { background: #fafafa; border: 1px solid var(--border); padding: 15px; border-radius: 10px; margin-top: 15px; }
+    .order-item p { margin: 6px 0; font-size: 14px; color: #333; }
+    .order-no { color: var(--primary); font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <div class="header-nav">
-    <span><b>알지언니샵</b> ♡ 주문조회</span>
-    <a href="index.html">← 주문서 작성하러 가기</a>
-  </div>
+  <div class="container">
+    <div class="header">
+      <h1>알지언니Live♡</h1>
+      <a href="index.html">← 주문서 작성하러 가기</a>
+    </div>
 
-  <div class="card">
-    <h2>🔍 내 주문 내역 조회</h2>
-    <p style="font-size: 13px; color: #666;">주문 시 입력하셨던 <b>연락처</b>를 입력해 주세요.</p>
-    <input type="tel" id="searchPhone" placeholder="연락처 (예: 01012345678)">
-    <button onclick="searchMyOrder()">주문 조회하기</button>
-    
-    <div id="resultArea"></div>
+    <div class="card">
+      <h2>🔍 주문 내역 조회</h2>
+      <p>주문하실 때 입력하셨던 <b>연락처</b>를 입력해 주세요.</p>
+      <input type="tel" id="searchPhone" placeholder="연락처 (예: 01012345678)">
+      <button onclick="searchMyOrder()">조회하기</button>
+      
+      <div id="resultArea"></div>
+    </div>
   </div>
 
   <script>

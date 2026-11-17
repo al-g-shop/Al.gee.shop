@@ -3,9 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>알지언니Live 주문서</title>
+  <title>알지언니♥LIve - LIVE SHOPPING</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <style>
+    :root { --primary: #e63946; --bg: #f8f9fa; --card-bg: #fff; --text: #333; --border: #eee; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
+    .container { max-width: 520px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+    .header h1 { font-size: 18px; margin: 0; color: var(--primary); font-weight: 800; }
+    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: #555; background: #fff; padding: 6px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card { background: var(--card-bg); padding: 20px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    h2 { font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #111; display: flex; align-items: center; gap: 6px; }
+    p { font-size: 13px; color: #666; line-height: 1.4; margin-top: 0; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    .row { display: flex; gap: 8px; }
+    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    button.primary { background: var(--primary); }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .item-box { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .price-box { background: #fafafa; border: 1px solid var(--border); padding: 14px; border-radius: 10px; margin-top: 15px; font-size: 14px; }
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .price-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: var(--primary); border-top: 1px dashed #ddd; padding-top: 8px; margin-top: 8px; }
+    .bank-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; font-size: 13px; margin: 12px 0; line-height: 1.5; color: #c53030; }
+    .tab-menu { display: flex; margin-bottom: 15px; background: #eee; padding: 3px; border-radius: 10px; }
+    .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border-radius: 8px; color: #666; }
+    .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .section-content { display: none; }
+    .section-content.active { display: block; }
+    /* Loading Modal */
+    #loadingModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center; }
+    .loading-content { background: #fff; padding: 25px; border-radius: 14px; text-align: center; width: 280px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>알지언니♥Live ♡</h1>
+      <a href="customer.html">🔍 주문조회하기</a>
+    </div>
+
+    <div class="tab-menu">
+      <div class="tab-btn active" onclick="switchTab('live')">💬 라이브 댓글 주문</div>
+      <div class="tab-btn" onclick="switchTab('direct')">🛒 직접 주문서 작성</div>
+    </div>
+
+    <!-- 1. 라이브 댓글 주문 탭 -->
+    <div id="tab-live" class="section-content active">
+      <div class="card">
+        <h2>1. 유튜브 닉네임 검색</h2>
+        <p>라이브 방송 때 댓글로 남긴 닉네임을 입력해 주세요.</p>
+        <div class="row">
+          <input type="text" id="nickname" placeholder="댓글 쓴 닉네임 입력">
+          <button onclick="fetchOrders()">불러오기</button>
+        </div>
+        <div id="orderList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p></div>
+      </div>
+    </div>
+
+    <!-- 2. 직접 주문서 작성 탭 -->
+    <div id="tab-direct" class="section-content section">
+      <div class="card">
+        <h2>상품 직접 담기</h2>
+        <p>원하시는 상품번호와 옵션을 직접 골라 담으세요.</p>
+        <div class="row">
+          <input type="text" id="directCode" placeholder="상품번호 (예: 93)">
+          <input type="text" id="directOpt" placeholder="칼라/사이즈 (예: 블랙/M)">
+          <button onclick="addDirectItem()">담기</button>
+        </div>
+        <div id="directList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">장바구니가 비어있습니다.</p></div>
+      </div>
+    </div>
+
+    <!-- 배송지 및 결제 정보 공통 카드 -->
+    <div class="card">
+      <h2>배송지 정보 입력</h2>
+      <input type="text" id="name" placeholder="수령인 성함 (필수)">
+      <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
+      <div class="row">
+        <input type="text" id="zipcode" placeholder="우편번호" readonly>
+        <button type="button" onclick="searchAddress()">주소 검색</button>
+      </div>
+      <input type="text" id="address" placeholder="기본주소" readonly>
+      <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
+
+      <div class="price-box">
+        <div class="price-row"><span>상품금engk</span><b id="sumItem">0원</b></div>
+        <div class="price-row"><span>배송비</span><b id="sumShipping">0원</b></div>
+        <div class="price-total"><span>총 결제금액</span><b id="sumTotal">0원</b></div>
+      </div>
+
+      <div class="bank-box">
+        📌 <b>무통장 입금 안내</b><br>
+        • 국민은행 487-102-01-326715 (조일운)<br>
+        • 주문자 성함과 입금자 성함이 동일해야 자동 확인됩니다.
+      </div>
+
+      <button class="primary" style="width:100%; font-size:16px;" onclick="submitOrder()">주문서 제출하기</button>
+    </div>
+  </div>
+
+  <!-- 처리 중 모달 -->
+  <div id="loadingModal">
+    <div class="loading-content">
+      <h3 style="margin-top:0;">주문 접수 중...</h3>
+      <p>잠시만 기다려주세요. 데이터를 안전하게 저장하고 있습니다.</p>
+    </div>
+  </div>
+
   <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
+    let currentItems = [];
+    let activeTab = 'live';
+    let productMaster = {};
+
+    window.onload = async () => {
+      const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');
+      if (saved.name) {
+        document.getElementById('name').value = saved.name;
+        document.getElementById('phone').value = saved.phone;
+        document.getElementById('zipcode').value = saved.zipcode;
+        document.getElementById('address').value = saved.address;
+        document.getElementById('detailAddress').value = saved.detailAddress;
+      }
+      // 상품 마스터 로드
+      try {
+        const res = await fetch(`${API_URL}?action=products`);
+        const data = await res.json();
+        if(data.products) {
+          data.products.forEach(p => { productMaster[p.code] = p; });
+        }
+      } catch(e) {}
+    };
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+      if(tab === 'live') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-live').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-direct').classList.add('active');
+      }
+    }
+
     function searchAddress() {
       new daum.Postcode({
         oncomplete: function(data) {
@@ -15,74 +158,6 @@
         }
       }).open();
     }
-  </script>
-  <style>
-    body { font-family: sans-serif; background: #f8f9fa; margin: 0; padding: 15px; color: #333; }
-    .card { max-width: 500px; margin: 0 auto 15px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    .header-nav { max-width: 500px; margin: 0 auto 15px; display: flex; justify-content: space-between; align-items: center; }
-    .header-nav a { text-decoration: none; color: #e63946; font-weight: bold; font-size: 14px; }
-    h2 { font-size: 18px; margin-top: 0; color: #111; }
-    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-    .row { display: flex; gap: 8px; }
-    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    .item-box { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; }
-    .total-box { font-size: 16px; font-weight: bold; text-align: right; margin-top: 15px; color: #e63946; }
-    .bank-info { background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; line-height: 1.5; }
-  </style>
-</head>
-<body>
-
-  <div class="header-nav">
-    <span><b>알지언니</b> ♡ LIVE SHOPPING</span>
-    <a href="customer.html">🔍 주문조회 하러가기 →</a>
-  </div>
-
-  <div class="card">
-    <h2>1. 유튜브 닉네임 검색</h2>
-    <div class="row">
-      <input type="text" id="nickname" placeholder="댓글 쓴 닉네임 입력">
-      <button onclick="fetchOrders()">불러오기</button>
-    </div>
-    <div id="orderList"><p style="color:#888; font-size:13px; margin:5px 0;">닉네임을 입력하고 불러오기를 눌러주세요.</p></div>
-    <div class="total-box" id="priceSummary">총 결제금액: 0원</div>
-  </div>
-
-  <div class="card">
-    <h2>2. 배송지 정보 입력</h2>
-    <input type="text" id="name" placeholder="수령인 성함 (필수)">
-    <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
-    <div class="row">
-      <input type="text" id="zipcode" placeholder="우편번호" readonly>
-      <button type="button" onclick="searchAddress()">주소 검색</button>
-    </div>
-    <input type="text" id="address" placeholder="기본주소" readonly>
-    <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
-
-    <div class="bank-info">
-      📌 <b>무통장 입금 안내</b><br>
-      • 입금 계좌: <b>국민은행 487-10201-326715 (조일운)</b><br>
-      • 주문자 성함과 입금자 성함이 같아야 자동 확인됩니다.
-    </div>
-
-    <button id="submitBtn" style="width:100%; background:#e63946; font-size:16px;" onclick="submitOrder()">주문서 제출하기</button>
-  </div>
-
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
-    let currentItems = [];
-    let totalAmount = 0;
-
-    window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');
-      if (saved.name) {
-        document.getElementById('name').value = saved.name;
-        document.getElementById('phone').value = saved.phone;
-        document.getElementById('zipcode').value = saved.zipcode;
-        document.getElementById('address').value = saved.address;
-        document.getElementById('detailAddress').value = saved.detailAddress;
-      }
-    };
 
     async function fetchOrders() {
       const nick = document.getElementById('nickname').value;
@@ -91,35 +166,63 @@
       const res = await fetch(`${API_URL}?nickname=${encodeURIComponent(nick)}`);
       const data = await res.json();
       currentItems = data.orders;
-      renderOrders();
+      renderCart();
     }
 
-    function renderOrders() {
-      const listEl = document.getElementById('orderList');
+    function addDirectItem() {
+      const code = document.getElementById('directCode').value.trim();
+      const opt = document.getElementById('directOpt').value.trim();
+      if(!code) return alert('상품번호를 입력해주세요.');
+      
+      const prod = productMaster[code];
+      if(!prod) return alert('존재하지 않는 상품번호입니다.');
+
+      currentItems.push({
+        code: code,
+        name: prod.name,
+        color: opt,
+        size: '',
+        price: prod.price,
+        qty: 1
+      });
+      document.getElementById('directCode').value = '';
+      document.getElementById('directOpt').value = '';
+      renderCart();
+    }
+
+    function removeItem(index) {
+      currentItems.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const listEl = activeTab === 'live' ? document.getElementById('orderList') : document.getElementById('directList');
       listEl.innerHTML = '';
       let itemTotal = 0;
 
       if(currentItems.length === 0) {
-        listEl.innerHTML = '<p style="color:#e63946; font-size:13px;">불러온 상품이 없습니다. 닉네임과 댓글을 확인해주세요.</p>';
+        listEl.innerHTML = '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">상품 내역이 없습니다.</p>';
       }
 
-      currentItems.forEach(item => {
+      currentItems.forEach((item, idx) => {
         itemTotal += item.price * item.qty;
         let optStr = (item.color || item.size) ? ` (${[item.color, item.size].filter(Boolean).join('/')})` : '';
         listEl.innerHTML += `<div class="item-box">
           <span>[${item.code}] ${item.name}${optStr}</span>
-          <b>${item.price.toLocaleString()}원</b>
+          <span><b>${item.price.toLocaleString()}원</b> <button style="padding:2px 6px; font-size:11px; background:#ddd; color:#333; margin-left:5px;" onclick="removeItem(${idx})">삭제</button></span>
         </div>`;
       });
 
       const shipping = itemTotal === 0 ? 0 : (itemTotal >= 200000 ? 0 : 4000);
-      totalAmount = itemTotal + shipping;
-      document.getElementById('priceSummary').innerText = 
-        `상품금액 ${itemTotal.toLocaleString()}원 + 배송비 ${shipping.toLocaleString()}원 = 총 ${totalAmount.toLocaleString()}원`;
+      const totalAmount = itemTotal + shipping;
+
+      document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
+      document.getElementById('sumShipping').innerText = shipping.toLocaleString() + '원';
+      document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
     }
 
     async function submitOrder() {
-      if(currentItems.length === 0) return alert('주문할 상품을 먼저 불러와주세요.');
+      if(currentItems.length === 0) return alert('주문할 상품을 담거나 불러와주세요.');
       const name = document.getElementById('name').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const zipcode = document.getElementById('zipcode').value.trim();
@@ -128,14 +231,14 @@
       if(!name) { alert('수령인 성함을 입력해주세요.'); document.getElementById('name').focus(); return; }
       if(!phone) { alert('연락처를 입력해주세요.'); document.getElementById('phone').focus(); return; }
       if(!zipcode) { alert('주소 검색을 통해 우편번호와 주소를 입력해주세요.'); return; }
-      if(!detailAddress) { alert('상세주소(동/호수 등)를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
+      if(!detailAddress) { alert('상세주소를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
 
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerText = "주문 접수 중...";
+      let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);
+      let shipping = itemTotal >= 200000 ? 0 : 4000;
+      let totalAmount = itemTotal + shipping;
 
       const payload = {
-        nickname: document.getElementById('nickname').value,
+        nickname: activeTab === 'live' ? document.getElementById('nickname').value : '직접주문',
         name: name,
         phone: phone,
         zipcode: zipcode,
@@ -146,6 +249,7 @@
       };
 
       localStorage.setItem('savedAddress', JSON.stringify(payload));
+      document.getElementById('loadingModal').style.display = 'flex';
 
       try {
         const res = await fetch(API_URL, {
@@ -153,18 +257,17 @@
           body: JSON.stringify(payload)
         });
         const result = await res.json();
+        document.getElementById('loadingModal').style.display = 'none';
+        
         if (result.success) {
-          alert(`🎉 주문이 정상 접수되었습니다!\n주문번호: ${result.orderNo}\n입금 후 배송이 시작됩니다. 감사합니다!`);
+          alert(`🎉 주문이 정상 접수되었습니다!\n주문번호: ${result.orderNo}`);
           location.reload();
         } else {
-          alert('접수 중 오류가 발생했습니다. 다시 시도해 주세요.');
-          btn.disabled = false;
-          btn.innerText = "주문서 제출하기";
+          alert('접수 중 오류가 발생했습니다.');
         }
       } catch (e) {
+        document.getElementById('loadingModal').style.display = 'none';
         alert('네트워크 오류가 발생했습니다.');
-        btn.disabled = false;
-        btn.innerText = "주문서 제출하기";
       }
     }
   </script>

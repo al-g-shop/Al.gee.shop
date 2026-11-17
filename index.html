@@ -5,19 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>주문서 작성</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script>
-  // 카카오 주소 검색 함수
-  function searchAddress() {
-    new daum.Postcode({
-      oncomplete: function(data) {
-        // 주소 검색 결과가 입력될 때 각 input 박스의 id와 일치해야 합니다
-        document.getElementById('zipcode').value = data.zonecode;
-        document.getElementById('address').value = data.roadAddress || data.jibunAddress;
-        document.getElementById('detailAddress').focus(); // 상세주소로 커서 이동
-      }
-    }).open();
-  }
-</script>
+  <script>
+    // 카카오 주소 검색 함수
+    function searchAddress() {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          document.getElementById('zipcode').value = data.zonecode;
+          document.getElementById('address').value = data.roadAddress || data.jibunAddress;
+          document.getElementById('detailAddress').focus(); // 상세주소로 커서 이동
+        }
+      }).open();
+    }
+  </script>
   <style>
     body { font-family: sans-serif; background: #f8f9fa; margin: 0; padding: 15px; }
     .card { max-width: 500px; margin: 0 auto 15px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
@@ -55,7 +54,6 @@
   </div>
 
   <script>
-    // ⬇️ 아래 따옴표 사이에 아까 복사해 둔 Apps Script 웹 앱 URL을 붙여넣으세요!
     const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
     
     let currentItems = [];
@@ -101,17 +99,10 @@
 
       const shipping = itemTotal === 0 ? 0 : (itemTotal >= 200000 ? 0 : 4000);
       totalAmount = itemTotal + shipping;
-      document.getElementById('priceSummary'].innerText = 
+      
+      // ✅ 오타 수정완료 (대괄호 -> 소괄호)
+      document.getElementById('priceSummary').innerText = 
         `상품금액 ${itemTotal.toLocaleString()}원 + 배송비 ${shipping.toLocaleString()}원 = 총 ${totalAmount.toLocaleString()}원`;
-    }
-
-    function searchAddress() {
-      new daum.Postcode({
-        oncomplete: function(data) {
-          document.getElementById('zipcode').value = data.zonecode;
-          document.getElementById('address').value = data.roadAddress || data.jibunAddress;
-        }
-      }).open();
     }
 
     async function submitOrder() {

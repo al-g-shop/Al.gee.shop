@@ -3,371 +3,273 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>❤️ 알지언니Live ❤️ - 주문서</title>
-  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <title>❤️ 알지언니Live ❤️</title>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
-    :root {
-      --primary-color: #4A607A;
-      --primary-hover: #1A2B4C;
-      --bg-color: #F4F6F9;
-      --card-bg: #FFFFFF;
-      --text-color: #333333;
-      --border-color: #E1E6EB;
-    }
-    * { box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; }
-    .container { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-    h1 { color: var(--primary-hover); text-align: center; font-size: 22px; margin: 0; }
-    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: var(--primary-color); background: #e9ecef; padding: 6px 12px; border-radius: 6px; }
-
-    .section { margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
-    .section:last-child { border-bottom: none; }
-    label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 6px; color: var(--primary-color); }
-    input[type="text"], input[type="tel"], select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
-    
-    .btn { background: var(--primary-color); color: #fff; border: none; padding: 12px 18px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 15px; transition: background 0.2s; }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #6C757D; margin-top: 6px; }
-    .btn-secondary:hover { background: #5A6268; }
-    
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
-    .cart-item-controls { display: flex; align-items: center; gap: 8px; }
-    .cart-item-controls button { width: 28px; height: 28px; border: 1px solid var(--border-color); background: #fff; border-radius: 4px; cursor: pointer; }
-    
-    /* 금액 요약 스타일 */
-    .price-summary { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 14px; line-height: 1.6; border: 1px solid var(--border-color); }
-    .price-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .total-price { font-size: 18px; font-weight: bold; text-align: right; color: #D9534F; margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px; }
-
-    .flex-row { display: flex; gap: 8px; }
-    .flex-row input { flex: 1; }
-    .flex-row button { width: auto; white-space: nowrap; }
-
-    /* 계좌번호 안내 및 배송지 선택 박스 */
-    .notice-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; line-height: 1.6; }
-    .copy-btn { background: #856404; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-left: 6px; }
-    
-    /* 배송비 클릭형 카드 스타일 */
-    .shipping-options { display: flex; gap: 10px; margin-bottom: 10px; }
-    .shipping-card { flex: 1; border: 2px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; background: #fff; transition: all 0.2s; font-size: 13px; font-weight: bold; }
-    .shipping-card input { display: none; }
-    .shipping-card.selected { border-color: var(--primary-color); background: #e8f0fe; color: var(--primary-hover); }
+    :root { --primary: #e63946; --bg: #f8f9fa; --card-bg: #fff; --text: #333; --border: #eee; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
+    .container { max-width: 520px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+    .header h1 { font-size: 18px; margin: 0; color: var(--primary); font-weight: 800; }
+    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: #555; background: #fff; padding: 6px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card { background: var(--card-bg); padding: 20px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    h2 { font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #111; display: flex; align-items: center; gap: 6px; }
+    p { font-size: 13px; color: #666; line-height: 1.4; margin-top: 0; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    .row { display: flex; gap: 8px; }
+    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    button.primary { background: var(--primary); }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .item-box { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .price-box { background: #fafafa; border: 1px solid var(--border); padding: 14px; border-radius: 10px; margin-top: 15px; font-size: 14px; }
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .price-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: var(--primary); border-top: 1px dashed #ddd; padding-top: 8px; margin-top: 8px; }
+    .bank-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; font-size: 13px; margin: 12px 0; line-height: 1.5; color: #c53030; }
+    .tab-menu { display: flex; margin-bottom: 15px; background: #eee; padding: 3px; border-radius: 10px; }
+    .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border-radius: 8px; color: #666; }
+    .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .section-content { display: none; }
+    .section-content.active { display: block; }
+    /* Loading Modal */
+    #loadingModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center; }
+    .loading-content { background: #fff; padding: 25px; border-radius: 14px; text-align: center; width: 280px; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h1>❤️ 알지언니Live ❤️</h1>
-    <a href="customer.html">주문조회하기 →</a>
-  </div>
-
-  <!-- 안내 문구 박스 (국민은행 계좌 + 복사 버튼) -->
-  <div class="notice-box">
-    <b>✨ 알지언니Live 방송 주문서 안내 ✨</b><br>
-    - 유튜브 라이브 방송 닉네임을 입력하시면 댓글 주문을 쉽게 불러올 수 있습니다.<br>
-    - 무통장 입금 계좌: <b>국민은행 123-456-789012</b> (예금주: 조일운)<br>
-    <button type="button" class="copy-btn" onclick="copyAccount()">계좌번호 복사하기</button><br>
-    - <b>15만원 이상 구매 시 무료배송!</b> (제주/도서산간은 추가배송비 3,000원 결제)
-  </div>
-
-  <!-- 1. 댓글로 주문 불러오기 -->
-  <div class="section">
-    <label for="searchNickname">유튜브 라이브 닉네임으로 주문 불러오기</label>
-    <div class="flex-row">
-      <input type="text" id="searchNickname" placeholder="유튜브 닉네임을 입력하세요">
-      <button class="btn" onclick="fetchCommentOrder()">조회</button>
+  <div class="container">
+    <div class="header">
+      <h1>❤️ 알지언니Live ❤️</h1>
+      <a href="customer.html">🔍 주문조회하기</a>
     </div>
-    <div id="commentResult" style="font-size:12px; color:#666; margin-top:4px;"></div>
-  </div>
 
-  <!-- 2. 직접 상품 추가 -->
-  <div class="section">
-    <label for="productSelect">상품 직접 추가 (직접선택 주문)</label>
-    <div class="flex-row">
-      <select id="productSelect">
-        <option value="">상품을 선택하세요</option>
-      </select>
-      <button class="btn btn-secondary" onclick="addSelectedProduct()">추가</button>
+    <div class="tab-menu">
+      <div class="tab-btn active" onclick="switchTab('live')">💬 라이브 댓글 주문</div>
+      <div class="tab-btn" onclick="switchTab('direct')">🛒 직접 주문서 작성</div>
     </div>
-  </div>
 
-  <!-- 3. 장바구니 목록 -->
-  <div class="section">
-    <label>선택된 주문 상품 목록</label>
-    <div id="cartList"><p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p></div>
-    
-    <!-- 배송비 선택 (양방향 클릭형) -->
-    <div style="margin-top: 15px;">
-      <label>배송지 구분 선택</label>
-      <div class="shipping-options">
-        <label class="shipping-card selected" id="cardGeneral" onclick="setShipping('general')">
-          <input type="radio" name="shipping" value="general" checked>
-          <b>일반택배</b><br><span style="font-weight:normal; font-size:12px;">4,000원 (15만 이상 무료)</span>
-        </label>
-        <label class="shipping-card" id="cardIsland" onclick="setShipping('island')">
-          <input type="radio" name="shipping" value="island">
-          <b>제주/도서산간</b><br><span style="font-weight:normal; font-size:12px;">7,000원 (15만 이상 3,000원)</span>
-        </label>
+    <!-- 1. 라이브 댓글 주문 탭 -->
+    <div id="tab-live" class="section-content active">
+      <div class="card">
+        <h2>1. 유튜브 닉네임 검색</h2>
+        <p>라이브 방송 때 댓글로 남긴 닉네임을 입력해 주세요.</p>
+        <div class="row">
+          <input type="text" id="nickname" placeholder="댓글 쓴 닉네임 입력">
+          <button onclick="fetchOrders()">불러오기</button>
+        </div>
+        <div id="orderList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p></div>
       </div>
     </div>
 
-    <div class="price-summary">
-      <div class="price-row"><span>상품 합계금액:</span> <span id="productTotal">0원</span></div>
-      <div class="price-row"><span>배송비:</span> <span id="shippingFee">4,000원</span></div>
-      <div class="total-price" id="totalPrice">총 결제 금액: 0원</div>
+    <!-- 2. 직접 주문서 작성 탭 -->
+    <div id="tab-direct" class="section-content section">
+      <div class="card">
+        <h2>상품 직접 담기</h2>
+        <p>원하시는 상품번호와 옵션을 직접 골라 담으세요.</p>
+        <div class="row">
+          <input type="text" id="directCode" placeholder="상품번호 (예: 93)">
+          <input type="text" id="directOpt" placeholder="칼라/사이즈 (예: 블랙/M)">
+          <button onclick="addDirectItem()">담기</button>
+        </div>
+        <div id="directList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">장바구니가 비어있습니다.</p></div>
+      </div>
+    </div>
+
+    <!-- 배송지 및 결제 정보 공통 카드 -->
+    <div class="card">
+      <h2>배송지 정보 입력</h2>
+      <input type="text" id="name" placeholder="수령인 성함 (필수)">
+      <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
+      <div class="row">
+        <input type="text" id="zipcode" placeholder="우편번호" readonly>
+        <button type="button" onclick="searchAddress()">주소 검색</button>
+      </div>
+      <input type="text" id="address" placeholder="기본주소" readonly>
+      <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
+
+      <div class="price-box">
+        <div class="price-row"><span>상품금engk</span><b id="sumItem">0원</b></div>
+        <div class="price-row"><span>배송비</span><b id="sumShipping">0원</b></div>
+        <div class="price-total"><span>총 결제금액</span><b id="sumTotal">0원</b></div>
+      </div>
+
+      <div class="bank-box">
+        📌 <b>무통장 입금 안내</b><br>
+        • 국민은행 478-102-01-326715 (조일운)<br>
+        • 주문자 성함과 입금자 성함이 동일해야 자동 확인됩니다.
+      </div>
+
+      <button class="primary" style="width:100%; font-size:16px;" onclick="submitOrder()">주문서 제출하기</button>
     </div>
   </div>
 
-  <!-- 4. 배송지 및 주문자 정보 -->
-  <form id="orderForm" onsubmit="submitOrder(event)">
-    <div class="section">
-      <label for="nickname">유튜브 닉네임</label>
-      <input type="text" id="nickname" placeholder="방송에서 쓰시는 닉네임" required>
-
-      <label for="depositor">입금자명</label>
-      <input type="text" id="depositor" placeholder="입금하시는 분 성함" required>
-
-      <label for="recipient">수령인 성함</label>
-      <input type="text" id="recipient" placeholder="받으시는 분 성함" required>
-
-      <label for="phone">연락처</label>
-      <input type="tel" id="phone" placeholder="010-0000-0000" required>
-
-      <label>배송지 주소</label>
-      <div class="flex-row">
-        <input type="text" id="zipcode" placeholder="우편번호" readonly required>
-        <button type="button" class="btn btn-secondary" onclick="execDaumPostcode()">주소 검색</button>
-      </div>
-      <input type="text" id="address1" placeholder="기본주소" readonly required>
-      <input type="text" id="address2" placeholder="상세주소를 입력하세요" required>
+  <!-- 처리 중 모달 -->
+  <div id="loadingModal">
+    <div class="loading-content">
+      <h3 style="margin-top:0;">주문 접수 중...</h3>
+      <p>잠시만 기다려주세요. 데이터를 안전하게 저장하고 있습니다.</p>
     </div>
+  </div>
 
-    <button type="submit" class="btn" id="submitBtn">주문 완료하기</button>
-  </form>
-</div>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
+    let currentItems = [];
+    let activeTab = 'live';
+    let productMaster = {};
 
-<script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
-  let productCatalog = [];
-  let cart = {};
-  let shippingType = 'general'; // 기본값 일반택배
-
-  window.onload = async function() {
-    await loadProducts();
-    loadSavedAddress();
-  };
-
-  function copyAccount() {
-    const accountNumber = "국민은행 123-456-789012 (예금주: 조일운)";
-    navigator.clipboard.writeText(accountNumber).then(() => {
-      alert("계좌번호가 복사되었습니다! 📋");
-    }).catch(() => {
-      alert("복사 실패. 직접 확인해 주세요.");
-    });
-  }
-
-  function setShipping(type) {
-    shippingType = type;
-    document.getElementById('cardGeneral').className = type === 'general' ? 'shipping-card selected' : 'shipping-card';
-    document.getElementById('cardIsland' ).className = type === 'island' ? 'shipping-card selected' : 'shipping-card';
-    document.querySelector(`input[name="shipping"][value="${type}"]`).checked = true;
-    renderCart();
-  }
-
-  async function loadProducts() {
-    try {
-      const res = await fetch(`${GAS_URL}?action=getProducts`);
-      productCatalog = await res.json();
-      const select = document.getElementById("productSelect");
-      
-      productCatalog.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = `[${p.id}] ${p.name} - ${p.price.toLocaleString()}원`;
-        select.appendChild(opt);
-      });
-    } catch (e) {
-      alert("상품 목록을 불러오지 못했습니다.");
-    }
-  }
-
-  async function fetchCommentOrder() {
-    const nick = document.getElementById("searchNickname").value.trim();
-    if (!nick) return alert("유튜브 닉네임을 입력해주세요.");
-
-    try {
-      const res = await fetch(`${GAS_URL}?action=getComment&nickname=${encodeURIComponent(nick)}`);
-      const data = await res.json();
-      
-      if (!data.comment) {
-        document.getElementById("commentResult").textContent = "해당 닉네임의 댓글 내역이 없습니다.";
-        return;
+    window.onload = async () => {
+      const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');
+      if (saved.name) {
+        document.getElementById('name').value = saved.name;
+        document.getElementById('phone').value = saved.phone;
+        document.getElementById('zipcode').value = saved.zipcode;
+        document.getElementById('address').value = saved.address;
+        document.getElementById('detailAddress').value = saved.detailAddress;
       }
-
-      document.getElementById("commentResult").textContent = `댓글 내역: "${data.comment}"`;
-      document.getElementById("nickname").value = nick;
-
-      productCatalog.forEach(p => {
-        const regex = new RegExp(`\\b${p.id}\\b`, 'g');
-        const matches = data.comment.match(regex);
-        if (matches) {
-          cart[p.id] = (cart[p.id] || 0) + matches.length;
+      // 상품 마스터 로드
+      try {
+        const res = await fetch(`${API_URL}?action=products`);
+        const data = await res.json();
+        if(data.products) {
+          data.products.forEach(p => { productMaster[p.code] = p; });
         }
-      });
-      renderCart();
-    } catch(e) {
-      alert("댓글 정보를 불러오는 중 오류가 발생했습니다.");
-    }
-  }
-
-  function addSelectedProduct() {
-    const pId = document.getElementById("productSelect").value;
-    if (!pId) return;
-    cart[pId] = (cart[pId] || 0) + 1;
-    renderCart();
-  }
-
-  function updateQty(pId, delta) {
-    if (cart[pId]) {
-      cart[pId] += delta;
-      if (cart[pId] <= 0) delete cart[pId];
-    }
-    renderCart();
-  }
-
-  function renderCart() {
-    const cartList = document.getElementById("cartList");
-    cartList.innerHTML = "";
-    let productTotal = 0;
-    const keys = Object.keys(cart);
-
-    if (keys.length === 0) {
-      cartList.innerHTML = '<p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p>';
-      document.getElementById("productTotal").textContent = "0원";
-      document.getElementById("shippingFee").textContent = "4,000원";
-      document.getElementById("totalPrice").textContent = "총 결제 금액: 0원";
-      return;
-    }
-
-    keys.forEach(id => {
-      const p = productCatalog.find(item => item.id === id);
-      if (p) {
-        const subtotal = p.price * cart[id];
-        productTotal += subtotal;
-
-        const div = document.createElement("div");
-        div.className = "cart-item";
-        div.innerHTML = `
-          <span>[${p.id}] ${p.name} (${p.price.toLocaleString()}원)</span>
-          <div class="cart-item-controls">
-            <button type="button" onclick="updateQty('${id}', -1)">-</button>
-            <span>${cart[id]}</span>
-            <button type="button" onclick="updateQty('${id}', 1)">+</button>
-          </div>
-        `;
-        cartList.appendChild(div);
-      }
-    });
-
-    // 배송비 계산 로직 (15만원 이상 무료배송, 제주도는 3천원 결제)
-    let shippingFee = 4000;
-    if (shippingType === 'general') {
-      shippingFee = productTotal >= 150000 ? 0 : 4000;
-    } else if (shippingType === 'island') {
-      shippingFee = productTotal >= 150000 ? 3000 : 7000;
-    }
-
-    const grandTotal = productTotal + shippingFee;
-
-    document.getElementById("productTotal").textContent = productTotal.toLocaleString() + "원";
-    document.getElementById("shippingFee").textContent = shippingFee.toLocaleString() + "원" + (shippingFee === 0 ? " (무료배송)" : "");
-    document.getElementById("totalPrice").textContent = `총 결제 금액: ${grandTotal.toLocaleString()}원`;
-  }
-
-  function execDaumPostcode() {
-    new daum.Postcode({
-      oncomplete: function(data) {
-        document.getElementById('zipcode').value = data.zonecode;
-        document.getElementById('address1').value = data.address;
-        document.getElementById('address2').focus();
-      }
-    }).open();
-  }
-
-  function loadSavedAddress() {
-    const saved = JSON.parse(localStorage.getItem("algee_address") || "{}");
-    if (saved.recipient) document.getElementById("recipient").value = saved.recipient;
-    if (saved.phone) document.getElementById("phone").value = saved.phone;
-    if (saved.zipcode) document.getElementById("zipcode").value = saved.zipcode;
-    if (saved.address1) document.getElementById("address1").value = saved.address1;
-    if (saved.address2) document.getElementById("address2").value = saved.address2;
-  }
-
-  async function submitOrder(e) {
-    e.preventDefault();
-    const keys = Object.keys(cart);
-    if (keys.length === 0) return alert("상품을 하나 이상 선택해주세요.");
-
-    let productTotal = 0;
-    keys.forEach(id => {
-      const p = productCatalog.find(item => item.id === id);
-      productTotal += p.price * cart[id];
-    });
-
-    let shippingFee = 4000;
-    if (shippingType === 'general') {
-      shippingFee = productTotal >= 150000 ? 0 : 4000;
-    } else if (shippingType === 'island') {
-      shippingFee = productTotal >= 150000 ? 3000 : 7000;
-    }
-
-    const shippingName = shippingType === 'general' ? '일반택배' : '제주/도서산간';
-    const itemsSummary = keys.map(id => {
-      const p = productCatalog.find(item => item.id === id);
-      return `${p.name}(${cart[id]}개)`;
-    }).join(", ") + ` [배송비: ${shippingName} ${shippingFee.toLocaleString()}원 포함]`;
-
-    let totalAmount = productTotal + shippingFee;
-
-    const payload = {
-      nickname: document.getElementById("nickname").value,
-      depositor: document.getElementById("depositor").value,
-      recipient: document.getElementById("recipient").value,
-      phone: document.getElementById("phone").value,
-      zipcode: document.getElementById("zipcode").value,
-      address1: document.getElementById("address1").value,
-      address2: document.getElementById("address2").value,
-      items: itemsSummary,
-      totalAmount: totalAmount
+      } catch(e) {}
     };
 
-    localStorage.setItem("algee_address", JSON.stringify({
-      recipient: payload.recipient,
-      phone: payload.phone,
-      zipcode: payload.zipcode,
-      address1: payload.address1,
-      address2: payload.address2
-    }));
-
-    document.getElementById("submitBtn").disabled = true;
-    document.getElementById("submitBtn").textContent = "주문 처리 중...";
-
-    try {
-      await fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-      alert("주문이 성공적으로 접수되었습니다!");
-      location.reload();
-    } catch(err) {
-      alert("주문 접수 중 오류가 발생했습니다.");
-      document.getElementById("submitBtn").disabled = false;
-      document.getElementById("submitBtn").textContent = "주문 완료하기";
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+      if(tab === 'live') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-live').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-direct').classList.add('active');
+      }
     }
-  }
-</script>
+
+    function searchAddress() {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          document.getElementById('zipcode').value = data.zonecode;
+          document.getElementById('address').value = data.roadAddress || data.jibunAddress;
+          document.getElementById('detailAddress').focus();
+        }
+      }).open();
+    }
+
+    async function fetchOrders() {
+      const nick = document.getElementById('nickname').value;
+      if (!nick) return alert('닉네임을 입력해주세요.');
+      
+      const res = await fetch(`${API_URL}?nickname=${encodeURIComponent(nick)}`);
+      const data = await res.json();
+      currentItems = data.orders;
+      renderCart();
+    }
+
+    function addDirectItem() {
+      const code = document.getElementById('directCode').value.trim();
+      const opt = document.getElementById('directOpt').value.trim();
+      if(!code) return alert('상품번호를 입력해주세요.');
+      
+      const prod = productMaster[code];
+      if(!prod) return alert('존재하지 않는 상품번호입니다.');
+
+      currentItems.push({
+        code: code,
+        name: prod.name,
+        color: opt,
+        size: '',
+        price: prod.price,
+        qty: 1
+      });
+      document.getElementById('directCode').value = '';
+      document.getElementById('directOpt').value = '';
+      renderCart();
+    }
+
+    function removeItem(index) {
+      currentItems.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const listEl = activeTab === 'live' ? document.getElementById('orderList') : document.getElementById('directList');
+      listEl.innerHTML = '';
+      let itemTotal = 0;
+
+      if(currentItems.length === 0) {
+        listEl.innerHTML = '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">상품 내역이 없습니다.</p>';
+      }
+
+      currentItems.forEach((item, idx) => {
+        itemTotal += item.price * item.qty;
+        let optStr = (item.color || item.size) ? ` (${[item.color, item.size].filter(Boolean).join('/')})` : '';
+        listEl.innerHTML += `<div class="item-box">
+          <span>[${item.code}] ${item.name}${optStr}</span>
+          <span><b>${item.price.toLocaleString()}원</b> <button style="padding:2px 6px; font-size:11px; background:#ddd; color:#333; margin-left:5px;" onclick="removeItem(${idx})">삭제</button></span>
+        </div>`;
+      });
+
+      const shipping = itemTotal === 0 ? 0 : (itemTotal >= 200000 ? 0 : 4000);
+      const totalAmount = itemTotal + shipping;
+
+      document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
+      document.getElementById('sumShipping').innerText = shipping.toLocaleString() + '원';
+      document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
+    }
+
+    async function submitOrder() {
+      if(currentItems.length === 0) return alert('주문할 상품을 담거나 불러와주세요.');
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const zipcode = document.getElementById('zipcode').value.trim();
+      const detailAddress = document.getElementById('detailAddress').value.trim();
+
+      if(!name) { alert('수령인 성함을 입력해주세요.'); document.getElementById('name').focus(); return; }
+      if(!phone) { alert('연락처를 입력해주세요.'); document.getElementById('phone').focus(); return; }
+      if(!zipcode) { alert('주소 검색을 통해 우편번호와 주소를 입력해주세요.'); return; }
+      if(!detailAddress) { alert('상세주소를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
+
+      let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);
+      let shipping = itemTotal >= 200000 ? 0 : 4000;
+      let totalAmount = itemTotal + shipping;
+
+      const payload = {
+        nickname: activeTab === 'live' ? document.getElementById('nickname').value : '직접주문',
+        name: name,
+        phone: phone,
+        zipcode: zipcode,
+        address: document.getElementById('address').value,
+        detailAddress: detailAddress,
+        items: currentItems,
+        totalPrice: totalAmount
+      };
+
+      localStorage.setItem('savedAddress', JSON.stringify(payload));
+      document.getElementById('loadingModal').style.display = 'flex';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        document.getElementById('loadingModal').style.display = 'none';
+        
+        if (result.success) {
+          alert(`🎉 주문이 정상 접수되었습니다!\n주문번호: ${result.orderNo}`);
+          location.reload();
+        } else {
+          alert('접수 중 오류가 발생했습니다.');
+        }
+      } catch (e) {
+        document.getElementById('loadingModal').style.display = 'none';
+        alert('네트워크 오류가 발생했습니다.');
+      }
+    }
+  </script>
 </body>
 </html>

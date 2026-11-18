@@ -140,7 +140,7 @@
       </div>
 
       <input type="text" id="name" placeholder="수령인 성함 (필수)">
-      <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
+      <input type="tel" id="phone" placeholder="연락처 (010 포함해서 숫자만 입력)" style="background:#fff;">
       <div class="row">
         <input type="text" id="zipcode" placeholder="우편번호" readonly>
         <button type="button" onclick="searchAddress()" style="height: 55px;">주소 검색</button>
@@ -190,7 +190,7 @@
     let currentItems = [];
     let activeTab = 'direct';
     let selectedArea = 'normal';
-    let hasPaidShippingToday = false; // 오늘 이미 배송비를 냈는지 여부
+    let hasPaidShippingToday = false; 
 
     function copyAccount() {
       navigator.clipboard.writeText("48710201326715").then(() => {
@@ -245,9 +245,9 @@
         const bundleRes = await fetch(`${API_URL}?action=checkBundleShipping&nickname=${encodeURIComponent(nickname)}`);
         const bundleData = await bundleRes.json();
         
-        if (bundleData.hasPaidShipping) {
+        if (bundleData.hasTodayOrder) {
           hasPaidShippingToday = true;
-          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 내역이 있습니다!\n오늘 추가 주문은 **배송비 0원(오직 제품 가격만 부과)** 처리됩니다. 📦`);
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 주문하신 내역이 있습니다!\n오늘 추가 주문은 **배송비 0원(오직 제품 가격만 부과)** 처리됩니다. 📦`);
         } else {
           hasPaidShippingToday = false;
         }
@@ -333,10 +333,9 @@
       renderCart();
     }
 
-    // 배송비 계산: 오늘 이미 배송비를 냈다면 추가 주문은 배송비 0원! (첫 주문은 15만 원 이상 시 무료, 일반 4천원 / 제주산간 7천원)
     function calculateShipping(itemTotal) {
       if (hasPaidShippingToday) {
-        return 0; // 오늘 이미 배송비를 냈으므로 추가 주문은 배송비 0원
+        return 0; 
       }
 
       const isFreeEligible = itemTotal >= 150000;
@@ -369,7 +368,7 @@
       });
 
       const shipping = calculateShipping(itemTotal);
-      const totalAmount = itemTotal + shipping; // 제품 가격만 부과됨
+      const totalAmount = itemTotal + shipping;
 
       document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
       
@@ -397,7 +396,7 @@
       if(!nickname) { alert('유튜브 닉네임을 입력해주세요.'); document.getElementById('nickname').focus(); return; }
       if(!name) { alert('수령인 성함을 입력해주세요.'); document.getElementById('name').focus(); return; }
       if(!phone) { alert('연락처를 입력해주세요.'); document.getElementById('phone').focus(); return; }
-      if(!zipcode) { alert('주소 검색을 통해 우편번호와 주소를 입력해주세요.'); return; }
+      if(!zipcode) { alert('주소 검색을 통해 우편번호와 우편번호와 주소를 입력해주세요.'); return; }
       if(!detailAddress) { alert('상세주소를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
 
       let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);

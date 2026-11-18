@@ -3,76 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>❤️ 알지언니Live ❤️주문서</title>
+  <title>🌸 알지언니Live 🌸 주문서</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
-    :root { --primary: #e63946; --bg: #f8f9fa; --card-bg: #fff; --text: #333; --border: #eee; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
-    .container { max-width: 520px; margin: 0 auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 5px; }
-    .header h1 { font-size: 18px; margin: 0; color: var(--primary); font-weight: 800; }
-    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: #555; background: #fff; padding: 6px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    :root { 
+      --primary: #ff4d6d; 
+      --primary-hover: #e03152;
+      --bg: #fff0f3; 
+      --card-bg: #fff; 
+      --text: #2b2b2b; 
+      --border: #ffccd5; 
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); font-size: 16px; }
+    .container { max-width: 580px; margin: 0 auto; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 5px; }
+    .header h1 { font-size: 22px; margin: 0; color: var(--primary); font-weight: 900; letter-spacing: -0.5px; }
+    .header a { text-decoration: none; font-size: 15px; font-weight: bold; color: #d63384; background: #fff; padding: 10px 18px; border-radius: 25px; box-shadow: 0 2px 6px rgba(255, 77, 109, 0.15); border: 1px solid var(--border); }
 
-    /* 최상단 통합 안내 카드 스타일 */
-    .guide-card { background: #fff; border: 1.5px solid #ffd8d8; border-radius: 14px; padding: 16px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(230, 57, 70, 0.06); }
-    .guide-title { font-size: 15px; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px; }
-    .guide-list { list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.6; color: #444; }
-    .guide-list li { margin-bottom: 6px; padding-left: 14px; position: relative; }
-    .guide-list li::before { content: "•"; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+    /* 최상단 통합 안내 카드 (핑크톤 & 큼직한 글씨) */
+    .guide-card { background: #fff; border: 2px solid #ffb3c6; border-radius: 18px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.08); }
+    .guide-title { font-size: 18px; font-weight: 900; color: var(--primary); margin: 0 0 12px 0; display: flex; align-items: center; gap: 6px; }
+    .guide-list { list-style: none; padding: 0; margin: 0; font-size: 15px; line-height: 1.7; color: #444; }
+    .guide-list li { margin-bottom: 8px; padding-left: 18px; position: relative; }
+    .guide-list li::before { content: "💗"; position: absolute; left: 0; font-size: 12px; top: 2px; }
     .guide-list li:last-child { margin-bottom: 0; }
-    .account-pill { display: inline-flex; align-items: center; gap: 6px; background: #fff5f5; border: 1px solid #feb2b2; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #c53030; margin-top: 2px; }
-    .copy-btn { background: #e63946; color: #fff; border: none; border-radius: 4px; padding: 2px 7px; font-size: 11px; cursor: pointer; font-weight: bold; }
+    
+    .account-pill { display: inline-flex; align-items: center; gap: 8px; background: #fff0f3; border: 1.5px solid #ff758c; padding: 8px 12px; border-radius: 10px; font-weight: bold; color: #c9184a; margin-top: 6px; font-size: 16px; }
+    .copy-btn { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer; font-weight: bold; }
+    .copy-btn:hover { background: var(--primary-hover); }
 
-    .card { background: var(--card-bg); padding: 20px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-    h2 { font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #111; display: flex; align-items: center; gap: 6px; }
-    p { font-size: 13px; color: #666; line-height: 1.4; margin-top: 0; }
-    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fff; }
-    .row { display: flex; gap: 8px; }
-    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; white-space: nowrap; }
-    button.primary { background: var(--primary); }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    .item-box { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; gap: 8px; }
-    .price-box { background: #fafafa; border: 1px solid var(--border); padding: 14px; border-radius: 10px; margin-top: 15px; font-size: 14px; }
-    .price-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .price-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: var(--primary); border-top: 1px dashed #ddd; padding-top: 8px; margin-top: 8px; }
-    .bank-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; font-size: 13px; margin: 12px 0; line-height: 1.5; color: #c53030; }
-    .tab-menu { display: flex; margin-bottom: 15px; background: #eee; padding: 3px; border-radius: 10px; }
-    .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border-radius: 8px; color: #666; }
-    .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .card { background: var(--card-bg); padding: 24px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid var(--border); }
+    h2 { font-size: 18px; margin-top: 0; margin-bottom: 12px; color: #111; display: flex; align-items: center; gap: 8px; font-weight: 800; }
+    p { font-size: 15px; color: #555; line-height: 1.5; margin-top: 0; }
+    
+    /* 입력창 및 셀렉트 대형화 */
+    input, select { width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid #ffd1d8; border-radius: 12px; box-sizing: border-box; font-size: 16px; background: #fff; color: #333; transition: all 0.2s; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15); }
+    
+    .row { display: flex; gap: 10px; }
+    
+    /* 버튼 대형화 및 핑크 무드 */
+    button { padding: 16px 20px; background: #333; color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; white-space: nowrap; transition: background 0.2s; }
+    button.primary { background: var(--primary); font-size: 18px; }
+    button.primary:hover { background: var(--primary-hover); }
+    button:disabled { background: #ddd; cursor: not-allowed; }
+    
+    .item-box { padding: 14px 0; border-bottom: 1px dashed var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 15px; gap: 10px; }
+    
+    .price-box { background: #fff5f7; border: 2px solid #ffccd5; padding: 18px; border-radius: 14px; margin-top: 18px; font-size: 16px; }
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 16px; }
+    .price-total { display: flex; justify-content: space-between; font-weight: 900; font-size: 19px; color: var(--primary); border-top: 2px dashed #ffb3c6; padding-top: 12px; margin-top: 10px; }
+    
+    .bank-box { background: #fff0f3; border: 1.5px solid #ff758c; padding: 16px; border-radius: 12px; font-size: 15px; margin: 15px 0; line-height: 1.6; color: #c9184a; }
+    
+    .tab-menu { display: flex; margin-bottom: 18px; background: #ffccd5; padding: 4px; border-radius: 14px; }
+    .tab-btn { flex: 1; padding: 14px; text-align: center; font-weight: bold; font-size: 15px; cursor: pointer; border-radius: 10px; color: #666; transition: all 0.2s; }
+    .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .section-content { display: none; }
     .section-content.active { display: block; }
-    .nickname-box { background: #fff8f8; border: 1.5px solid #feb2b2; padding: 14px; border-radius: 10px; margin-bottom: 12px; }
+    
+    .nickname-box { background: #fff5f7; border: 2px solid #ff758c; padding: 18px; border-radius: 14px; margin-bottom: 15px; }
 
-    /* 배송비 클릭형 카드 스타일 */
-    .shipping-grid { display: flex; gap: 10px; margin-bottom: 15px; }
-    .shipping-card { flex: 1; border: 2px solid #ddd; border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; background: #fff; transition: all 0.2s; }
-    .shipping-card.selected { border-color: var(--primary); background: #fff5f5; box-shadow: 0 0 0 1px var(--primary); }
-    .shipping-card .s-title { font-size: 14px; font-weight: bold; color: #333; margin-bottom: 4px; }
-    .shipping-card .s-desc { font-size: 11px; color: #666; line-height: 1.3; }
+    /* 배송비 클릭형 카드 스타일 (대형화) */
+    .shipping-grid { display: flex; gap: 10px; margin-bottom: 18px; }
+    .shipping-card { flex: 1; border: 2px solid #ffd1d8; border-radius: 12px; padding: 16px 12px; text-align: center; cursor: pointer; background: #fff; transition: all 0.2s; }
+    .shipping-card.selected { border-color: var(--primary); background: #fff0f3; box-shadow: 0 0 0 2px var(--primary); }
+    .shipping-card .s-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 6px; }
+    .shipping-card .s-desc { font-size: 13px; color: #666; line-height: 1.4; }
 
     #loadingModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center; }
-    .loading-content { background: #fff; padding: 25px; border-radius: 14px; text-align: center; width: 280px; }
+    .loading-content { background: #fff; padding: 30px; border-radius: 18px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .loading-content h3 { font-size: 18px; color: var(--primary); }
+    .loading-content p { font-size: 14px; color: #666; }
   </style>
 </head>
 <body>
 
   <div class="container">
     <div class="header">
-      <h1>❤️ 알지언니Live ❤️</h1>
+      <h1>🌸 알지언니Live 🌸</h1>
       <a href="customer.html">🔍 주문조회하기</a>
     </div>
 
-    <!-- 최상단 통합 안내창 (계좌번호 복사 포함) -->
+    <!-- 최상단 통합 안내창 -->
     <div class="guide-card">
-      <div class="guide-title">📢 알지언니Live❤️주문 · 입금 안내</div>
+      <div class="guide-title">✨ 알지언니Live 주문 · 입금 안내</div>
       <ul class="guide-list">
-        <li><b>주문방법:</b> <b>[직접 주문서 작성]</b>에서 상품명·금액을 적어 담거나, <b>[라이브 댓글 주문]</b>에서 유튜브 닉네임으로 불러온 뒤 배송지를 입력해 주세요.</li>
-        <li><b>배송비 안내:</b> 기본 4,000원 / <b style="color:#e63946;">15만 원 이상 무료배송</b> (제주/도서산간은 추가 3,000원)</li>
+        <li><b>배송비 안내:</b> 기본 4,000원 / <b style="color:var(--primary);">15만 원 이상 무료배송</b> (제주/도서산간 추가 3,000원)</li>
         <li>
           <b>입금계좌:</b> <b>반드시 유튜브 닉네임(입금자명)으로 입금해 주세요!</b><br>
           <span class="account-pill">
             국민은행 487-102-01-326715 (조일운)
-            <button type="button" class="copy-btn" onclick="copyAccount()">복사</button>
+            <button type="button" class="copy-btn" onclick="copyAccount()">계좌번호 복사</button>
           </span>
         </li>
       </ul>
@@ -86,17 +109,17 @@
     <div id="tab-direct" class="section-content active">
       <div class="card">
         <h2>주문 상품 직접 입력</h2>
-        <p>방송에서 보신 상품명과 옵션, 금액을 직접 적고 <b>[담기]</b>를 눌러주세요.</p>
+        <p>상품명과 옵션, 가격을 적고 <b>[담기]</b>를 눌러주세요.</p>
         <input type="text" id="manualName" placeholder="상품명 (예: 알지데님팬츠 또는 번호)">
         <div class="row">
           <input type="text" id="manualOpt" placeholder="칼라/사이즈 (예: 블랙/M)">
-          <input type="number" id="manualQty" placeholder="수량" value="1" min="1" style="max-width: 85px;">
+          <input type="number" id="manualQty" placeholder="수량" value="1" min="1" style="max-width: 90px;">
         </div>
         <div class="row">
-          <input type="number" id="manualPrice" placeholder="상품 1개 가격 (숫자만 입력, 예: 35000)">
-          <button onclick="addManualItem()" style="height: 43px;">+ 담기</button>
+          <input type="number" id="manualPrice" placeholder="상품 1개 가격 (숫자만, 예: 35000)">
+          <button onclick="addManualItem()" style="height: 55px;">+ 담기</button>
         </div>
-        <div id="directList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">담긴 상품이 없습니다.</p></div>
+        <div id="directList"><p style="color:#888; font-size:14px; text-align:center; margin:15px 0;">담긴 상품이 없습니다.</p></div>
       </div>
     </div>
 
@@ -106,19 +129,19 @@
         <p>라이브 방송 때 댓글로 남긴 닉네임을 입력해 주세요.</p>
         <div class="row">
           <input type="text" id="searchNickname" placeholder="댓글 쓴 닉네임 입력">
-          <button onclick="fetchOrders()" style="height: 43px;">불러오기</button>
+          <button onclick="fetchOrders()" style="height: 55px;">불러오기</button>
         </div>
-        <div id="orderList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p></div>
+        <div id="orderList"><p style="color:#888; font-size:14px; text-align:center; margin:15px 0;">불러온 상품이 없습니다.</p></div>
       </div>
     </div>
 
     <div class="card">
       <h2>배송지 및 입금자 정보 입력</h2>
 
-      <!-- 배송지 입력 전 독립된 필수 유튜브 닉네임 입력란 -->
+      <!-- 유튜브 닉네임 필수 입력란 -->
       <div class="nickname-box">
-        <label for="nickname" style="font-size:14px; font-weight:bold; color:var(--primary); margin-bottom:4px; display:block;">🔴 유튜브 닉네임 (필수 작성)</label>
-        <p style="font-size:12px; color:#666; margin-bottom:8px;">입금 확인용이므로 방송에서 쓰시는 닉네임을 정확히 적어주세요.</p>
+        <label for="nickname" style="font-size:15px; font-weight:bold; color:var(--primary); margin-bottom:6px; display:block;">🔴 유튜브 닉네임 (필수 작성)</label>
+        <p style="font-size:13px; color:#666; margin-bottom:10px;">입금 확인용이므로 방송에서 쓰시는 닉네임을 정확히 적어주세요.</p>
         <input type="text" id="nickname" placeholder="유튜브 닉네임 입력" style="margin-bottom:0; background:#fff;" required>
       </div>
 
@@ -126,14 +149,14 @@
       <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
       <div class="row">
         <input type="text" id="zipcode" placeholder="우편번호" readonly>
-        <button type="button" onclick="searchAddress()" style="height: 43px;">주소 검색</button>
+        <button type="button" onclick="searchAddress()" style="height: 55px;">주소 검색</button>
       </div>
       <input type="text" id="address" placeholder="기본주소" readonly>
       <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
 
       <!-- 배송지역 클릭형 카드 선택 -->
-      <div style="margin-top: 15px;">
-        <label style="font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 8px;">🚚 배송지역 선택</label>
+      <div style="margin-top: 18px;">
+        <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 10px;">🚚 배송지역 선택</label>
         <div class="shipping-grid">
           <div class="shipping-card selected" id="shippingNormal" onclick="selectShipping('normal')">
             <div class="s-title">일반 지역</div>
@@ -158,7 +181,7 @@
 - <b>유튜브 닉네임으로 입금해 주셔야 자동 확인됩니다!</b>
       </div>
 
-      <button class="primary" style="width:100%; font-size:16px;" onclick="submitOrder()">주문서 제출하기</button>
+      <button class="primary" style="width:100%; font-size:18px; padding:18px;" onclick="submitOrder()">주문서 제출하기</button>
     </div>
   </div>
 
@@ -173,11 +196,11 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
     let currentItems = [];
     let activeTab = 'direct';
-    let selectedArea = 'normal'; // 기본값 일반 지역
+    let selectedArea = 'normal';
 
     function copyAccount() {
       navigator.clipboard.writeText("48710201326715").then(() => {
-        alert("계좌번호(국민은행 487-102-01-326715)가 복사되었습니다.");
+        alert("계좌번호(국민은행 487-102-01-326715)가 복사되었습니다. 📋");
       }).catch(() => {
         alert("계좌번호: 국민은행 487-102-01-326715 (조일운)");
       });
@@ -195,16 +218,15 @@
       renderCart();
     }
 
+    // 페이지 로드 시 로컬스토리지에 저장된 고객 정보 자동 불러오기
     window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');
-      if (saved.name) {
-        document.getElementById('name').value = saved.name;
-        document.getElementById('phone').value = saved.phone;
-        document.getElementById('zipcode').value = saved.zipcode;
-        document.getElementById('address').value = saved.address;
-        document.getElementById('detailAddress').value = saved.detailAddress;
-        if(saved.nickname) document.getElementById('nickname').value = saved.nickname;
-      }
+      const saved = JSON.parse(localStorage.getItem('algee_customer_info') || '{}');
+      if (saved.nickname) document.getElementById('nickname').value = saved.nickname;
+      if (saved.name) document.getElementById('name').value = saved.name;
+      if (saved.phone) document.getElementById('phone').value = saved.phone;
+      if (saved.zipcode) document.getElementById('zipcode').value = saved.zipcode;
+      if (saved.address) document.getElementById('address').value = saved.address;
+      if (saved.detailAddress) document.getElementById('detailAddress').value = saved.detailAddress;
     };
 
     function switchTab(tab) {
@@ -229,7 +251,7 @@
           
           const fullAddr = (data.roadAddress || data.jibunAddress) + " " + (data.buildingName || '');
           if(fullAddr.includes('제주') || fullAddr.includes('울릉') || fullAddr.includes('서귀포')) {
-            selectShipping('island'); // 주소에 제주 등 포함 시 자동 선택
+            selectShipping('island');
           }
           
           document.getElementById('detailAddress').focus();
@@ -300,8 +322,8 @@
 
       if(currentItems.length === 0) {
         listEl.innerHTML = activeTab === 'direct' 
-          ? '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">담긴 상품이 없습니다.</p>'
-          : '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p>';
+          ? '<p style="color:#888; font-size:14px; text-align:center; margin:15px 0;">담긴 상품이 없습니다.</p>'
+          : '<p style="color:#888; font-size:14px; text-align:center; margin:15px 0;">불러온 상품이 없습니다.</p>';
       }
 
       currentItems.forEach((item, idx) => {
@@ -310,7 +332,7 @@
         let optStr = (item.color || item.size) ? ` (${[item.color, item.size].filter(Boolean).join('/')})` : '';
         listEl.innerHTML += `<div class="item-box">
           <span>[${item.code}] ${item.name}${optStr} × ${item.qty}개</span>
-          <span style="white-space:nowrap;"><b>${subTotal.toLocaleString()}원</b> <button style="padding:3px 7px; font-size:11px; background:#eee; color:#333; margin-left:4px;" onclick="removeItem(${idx})">삭제</button></span>
+          <span style="white-space:nowrap;"><b>${subTotal.toLocaleString()}원</b> <button style="padding:6px 10px; font-size:12px; background:#fff0f3; color:var(--primary); border:1px solid var(--border); border-radius:6px; margin-left:6px;" onclick="removeItem(${idx})">삭제</button></span>
         </div>`;
       });
 
@@ -328,6 +350,7 @@
       const name = document.getElementById('name').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const zipcode = document.getElementById('zipcode').value.trim();
+      const address = document.getElementById('address').value.trim();
       const detailAddress = document.getElementById('detailAddress').value.trim();
 
       if(!nickname) { alert('유튜브 닉네임을 입력해주세요.'); document.getElementById('nickname').focus(); return; }
@@ -342,7 +365,7 @@
 
       const finalItems = [...currentItems];
       if (selectedArea === 'island') {
-        finalItems.push({ code: '배송비', name: '제주/도서산간 추가배송비', color: '', size: '', price: 3000, qty: 1 });
+        finalItems.push({ code: '배송지', name: '제주/도서산간 추가배송비', color: '', size: '', price: 3000, qty: 1 });
       }
 
       const payload = {
@@ -350,13 +373,22 @@
         name: name,
         phone: phone,
         zipcode: zipcode,
-        address: document.getElementById('address').value,
+        address: address,
         detailAddress: detailAddress,
         items: finalItems,
         totalPrice: totalAmount
       };
 
-      localStorage.setItem('savedAddress', JSON.stringify(payload));
+      // 고객 정보 로컬스토리지에 자동 저장 (재방문 시 자동완성)
+      localStorage.setItem('algee_customer_info', JSON.stringify({
+        nickname: nickname,
+        name: name,
+        phone: phone,
+        zipcode: zipcode,
+        address: address,
+        detailAddress: detailAddress
+      }));
+
       document.getElementById('loadingModal').style.display = 'flex';
 
       try {

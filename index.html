@@ -123,7 +123,7 @@
         <h2>유튜브 닉네임 검색</h2>
         <p>라이브 방송 때 댓글로 남긴 닉네임을 입력해 주세요.</p>
         <div class="row">
-          <input type="text" id="searchNickname" placeholder="댓글 쓴 닉네임 입력">
+          <input type="text" id="searchNickname" placeholder="예) 알지언니-4g6 (앞 @ 제외)">
           <button onclick="fetchOrders()" style="height: 55px;">불러오기</button>
         </div>
         <div id="orderList"><p style="color:#888; font-size:14px; text-align:center; margin:15px 0;">불러온 상품이 없습니다.</p></div>
@@ -133,11 +133,10 @@
     <div class="card">
       <h2>배송지 및 입금자 정보 입력</h2>
 
-      <!-- 유튜브 닉네임 입력란 (Blur 시 DB에서 기존 주소 자동 불러오기 연동) -->
       <div class="nickname-box">
         <label for="nickname" style="font-size:15px; font-weight:bold; color:var(--primary); margin-bottom:6px; display:block;">🔴 유튜브 닉네임 (필수 작성)</label>
-        <p style="font-size:13px; color:#666; margin-bottom:10px;">입금 확인용이므로 방송에서 쓰시는 닉네임을 정확히 적어주세요. (이전에 주문하신 분은 자동 입력됩니다!)</p>
-        <input type="text" id="nickname" placeholder="유튜브 닉네임 입력 후 다른 칸을 누르면 주소가 자동 불러와집니다" onblur="loadCustomerInfo()" style="margin-bottom:0; background:#fff;" required>
+        <p style="font-size:13px; color:#666; margin-bottom:10px;">입금 확인용이므로 방송에서 쓰시는 닉네임을 적어주세요. (단골 고객님은 입력 후 다른 칸을 누르면 주소가 자동 완성됩니다!)</p>
+        <input type="text" id="nickname" placeholder="예) 알지언니-4g6 (앞 @ 제외)" onblur="loadCustomerInfo()" style="margin-bottom:0; background:#fff;" required>
       </div>
 
       <input type="text" id="name" placeholder="수령인 성함 (필수)">
@@ -165,8 +164,8 @@
 
       <div class="price-box">
         <div class="price-row"><span>상품금액</span><b id="sumItem">0원</b></div>
-        <div class="price-row"><span>배송비</span><b id="sumShipping">0원</b></div>
-        <div class="price-total"><span>총 결제금액</span><b id="sumTotal">0원</b></div>
+        <div class="price-row"><span>배송비</span><b id="sumShipping">4,000원</b></div>
+        <div class="price-total"><span>총 결제금액</span><b id="sumTotal">4,000원</b></div>
       </div>
 
       <div class="bank-box">
@@ -212,7 +211,17 @@
       renderCart();
     }
 
-    // [신규] 닉네임 입력 후 칸을 벗어났을 때 스프레드시트 DB에서 기존 주소 자동 불러오기
+    // 주소 검색 시 제주/도서산간 자동 감지 및 7,000원 선택
+    function checkIslandAddress(addrText) {
+      const keywords = ['제주', '울릉', '서귀포', '옹진', '완도군 청산면', '신안군'];
+      const isIsland = keywords.some(k => addrText.includes(k));
+      if (isIsland) {
+        selectShipping('island');
+      } else {
+        selectShipping('normal');
+      }
+    }
+
     async function loadCustomerInfo() {
       const nickname = document.getElementById('nickname').value.trim();
       if (!nickname) return;
@@ -229,11 +238,8 @@
           document.getElementById('address').value = info.address || '';
           document.getElementById('detailAddress').value = info.detailAddress || '';
           
-          // 제주/도서산간 주소 자동 감지
           const fullAddr = (info.address || "") + " " + (info.detailAddress || "");
-          if (fullAddr.includes('제주') || fullAddr.includes('울릉') || fullAddr.includes('서귀포')) {
-            selectShipping('island');
-          }
+          checkIslandAddress(fullAddr);
           
           renderCart();
         }
@@ -259,13 +265,11 @@
     function searchAddress() {
       new daum.Postcode({
         oncomplete: function(data) {
+          const roadAddr = data.roadAddress || data.jibunAddress;
           document.getElementById('zipcode').value = data.zonecode;
-          document.getElementById('address').value = data.roadAddress || data.jibunAddress;
+          document.getElementById('address').value = roadAddr;
           
-          const fullAddr = (data.roadAddress || data.jibunAddress) + " " + (data.buildingName || '');
-          if(fullAddr.includes('제주') || fullAddr.includes('울릉') || fullAddr.includes('서귀포')) {
-            selectShipping('island');
-          }
+          checkIslandAddress(roadAddr + " " + (data.buildingName || ''));
           
           document.getElementById('detailAddress').focus();
           renderCart();
@@ -283,7 +287,7 @@
       
       if(currentItems.length > 0) {
         document.getElementById('nickname').value = nick;
-        loadCustomerInfo(); // 닉네임 일치 시 주소 정보도 함께 불러오기
+        loadCustomerInfo();
       }
       
       renderCart();
@@ -320,12 +324,12 @@
       renderCart();
     }
 
+    // 배송비 계산 (기본 4,000원 항상 표시, 15만 원 이상 무료, 제주/도서산간은 +3,000원 추가)
     function calculateShipping(itemTotal) {
-      if (itemTotal === 0) return 0;
-      if (itemTotal >= 150000) {
-        return selectedArea === 'island' ? 3000 : 0;
+      if (selectedArea === 'island') {
+        return itemTotal >= 150000 ? 3000 : 7000;
       } else {
-        return selectedArea === 'island' ? 7000 : 4000;
+        return itemTotal >= 150000 ? 0 : 4000;
       }
     }
 
@@ -354,7 +358,15 @@
       const totalAmount = itemTotal + shipping;
 
       document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
-      document.getElementById('sumShipping').innerText = shipping.toLocaleString() + '원';
+      
+      let shippingText = shipping.toLocaleString() + '원';
+      if (itemTotal >= 150000 && selectedArea === 'normal') {
+        shippingText = '0원 (15만 원 이상 무료)';
+      } else if (itemTotal >= 150000 && selectedArea === 'island') {
+        shippingText = '3,000원 (도서산간 추가비)';
+      }
+      document.getElementById('sumShipping').innerText = shippingText;
+      
       document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
     }
 
@@ -378,8 +390,15 @@
       let totalAmount = itemTotal + shipping;
 
       const finalItems = [...currentItems];
-      if (selectedArea === 'island') {
-        finalItems.push({ code: '배송지', name: '제주/도서산간 추가배송비', color: '', size: '', price: 3000, qty: 1 });
+      if (shipping > 0) {
+        finalItems.push({ 
+          code: '배송비', 
+          name: selectedArea === 'island' ? '제주/도서산간 추가배송비' : '기본 배송비', 
+          color: '', 
+          size: '', 
+          price: shipping, 
+          qty: 1 
+        });
       }
 
       const payload = {
@@ -398,7 +417,6 @@
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
-        
           body: JSON.stringify(payload)
         });
         const result = await res.json();

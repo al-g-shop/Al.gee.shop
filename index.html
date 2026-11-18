@@ -9,9 +9,20 @@
     :root { --primary: #e63946; --bg: #f8f9fa; --card-bg: #fff; --text: #333; --border: #eee; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); }
     .container { max-width: 520px; margin: 0 auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 5px; }
     .header h1 { font-size: 18px; margin: 0; color: var(--primary); font-weight: 800; }
     .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: #555; background: #fff; padding: 6px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    
+    /* 최상단 통합 안내 카드 스타일 */
+    .guide-card { background: #fff; border: 1.5px solid #ffd8d8; border-radius: 14px; padding: 16px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(230, 57, 70, 0.06); }
+    .guide-title { font-size: 15px; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px; }
+    .guide-list { list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.6; color: #444; }
+    .guide-list li { margin-bottom: 6px; padding-left: 14px; position: relative; }
+    .guide-list li::before { content: "•"; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+    .guide-list li:last-child { margin-bottom: 0; }
+    .account-pill { display: inline-flex; align-items: center; gap: 6px; background: #fff5f5; border: 1px solid #feb2b2; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #c53030; margin-top: 2px; }
+    .copy-btn { background: #e63946; color: #fff; border: none; border-radius: 4px; padding: 2px 7px; font-size: 11px; cursor: pointer; font-weight: bold; }
+
     .card { background: var(--card-bg); padding: 20px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
     h2 { font-size: 16px; margin-top: 0; margin-bottom: 8px; color: #111; display: flex; align-items: center; gap: 6px; }
     p { font-size: 13px; color: #666; line-height: 1.4; margin-top: 0; }
@@ -40,6 +51,22 @@
     <div class="header">
       <h1>알지언니♥Live ♡</h1>
       <a href="customer.html">🔍 주문조회하기</a>
+    </div>
+
+    <!-- 최상단 통합 안내창 (주문방법 / 배송비 / 계좌번호) -->
+    <div class="guide-card">
+      <div class="guide-title">📢 알지언니샵 주문 · 입금 안내</div>
+      <ul class="guide-list">
+        <li><b>주문방법:</b> 아래 <b>[직접 주문서 작성]</b>에서 상품명·금액을 적어 담거나, <b>[라이브 댓글 주문]</b>에서 유튜브 닉네임으로 불러온 뒤 배송지를 입력해 주세요.</li>
+        <li><b>배송비 안내:</b> 기본 <b>4,000원</b> / <b style="color:#e63946;">15만 원 이상 구매 시 무료배송</b></li>
+        <li>
+          <b>입금계좌:</b> 주문자 성함과 입금자 성함을 동일하게 입금해 주세요.<br>
+          <span class="account-pill">
+            국민은행 487-102-01-326715 (조일운)
+            <button type="button" class="copy-btn" onclick="copyAccount()">복사</button>
+          </span>
+        </li>
+      </ul>
     </div>
 
     <div class="tab-menu">
@@ -89,7 +116,7 @@
 
       <div class="price-box">
         <div class="price-row"><span>상품금액</span><b id="sumItem">0원</b></div>
-        <div class="price-row"><span>배송비</span><b id="sumShipping">0원</b></div>
+        <div class="price-row"><span>배송비 (15만원 이상 무료)</span><b id="sumShipping">0원</b></div>
         <div class="price-total"><span>총 결제금액</span><b id="sumTotal">0원</b></div>
       </div>
 
@@ -114,6 +141,14 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
     let currentItems = [];
     let activeTab = 'direct';
+
+    function copyAccount() {
+      navigator.clipboard.writeText("48710201326715").then(() => {
+        alert("계좌번호(국민은행 487-102-01-326715)가 복사되었습니다.");
+      }).catch(() => {
+        alert("계좌번호: 국민은행 487-102-01-326715 (조일운)");
+      });
+    }
 
     window.onload = () => {
       const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');

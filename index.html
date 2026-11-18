@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>알지언니♥LIve - LIVE SHOPPING</title>
+  <title>알지언니♥Live - 주문서</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
     :root { --primary: #e63946; --bg: #f8f9fa; --card-bg: #fff; --text: #333; --border: #eee; }
@@ -17,7 +17,7 @@
     p { font-size: 13px; color: #666; line-height: 1.4; margin-top: 0; }
     input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
     .row { display: flex; gap: 8px; }
-    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; white-space: nowrap; }
     button.primary { background: var(--primary); }
     button:disabled { background: #ccc; cursor: not-allowed; }
     .item-box { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
@@ -30,7 +30,6 @@
     .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .section-content { display: none; }
     .section-content.active { display: block; }
-    /* Loading Modal */
     #loadingModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center; }
     .loading-content { background: #fff; padding: 25px; border-radius: 14px; text-align: center; width: 280px; }
   </style>
@@ -43,35 +42,36 @@
       <a href="customer.html">🔍 주문조회하기</a>
     </div>
 
+    <!-- 탭 순서 변경: 직접 주문서 작성이 1번(기본 선택), 라이브 댓글 주문이 2번 -->
     <div class="tab-menu">
-      <div class="tab-btn active" onclick="switchTab('live')">💬 라이브 댓글 주문</div>
-      <div class="tab-btn" onclick="switchTab('direct')">🛒 직접 주문서 작성</div>
+      <div class="tab-btn active" onclick="switchTab('direct')">🛒 직접 주문서 작성</div>
+      <div class="tab-btn" onclick="switchTab('live')">💬 라이브 댓글 주문</div>
     </div>
 
-    <!-- 1. 라이브 댓글 주문 탭 -->
-    <div id="tab-live" class="section-content active">
+    <!-- 1. 직접 주문서 작성 탭 (기본 화면) -->
+    <div id="tab-direct" class="section-content active">
       <div class="card">
-        <h2>1. 유튜브 닉네임 검색</h2>
+        <h2>상품 직접 담기</h2>
+        <p>원하시는 상품번호와 옵션을 직접 골라 담으세요.</p>
+        <div class="row">
+          <input type="text" id="directCode" placeholder="상품번호 (예: 6)">
+          <input type="text" id="directOpt" placeholder="칼라/사이즈 (예: 블랙/M)">
+          <button onclick="addDirectItem()">담기</button>
+        </div>
+        <div id="directList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">장바구니가 비어있습니다.</p></div>
+      </div>
+    </div>
+
+    <!-- 2. 라이브 댓글 주문 탭 -->
+    <div id="tab-live" class="section-content">
+      <div class="card">
+        <h2>유튜브 닉네임 검색</h2>
         <p>라이브 방송 때 댓글로 남긴 닉네임을 입력해 주세요.</p>
         <div class="row">
           <input type="text" id="nickname" placeholder="댓글 쓴 닉네임 입력">
           <button onclick="fetchOrders()">불러오기</button>
         </div>
         <div id="orderList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p></div>
-      </div>
-    </div>
-
-    <!-- 2. 직접 주문서 작성 탭 -->
-    <div id="tab-direct" class="section-content section">
-      <div class="card">
-        <h2>상품 직접 담기</h2>
-        <p>원하시는 상품번호와 옵션을 직접 골라 담으세요.</p>
-        <div class="row">
-          <input type="text" id="directCode" placeholder="상품번호 (예: 93)">
-          <input type="text" id="directOpt" placeholder="칼라/사이즈 (예: 블랙/M)">
-          <button onclick="addDirectItem()">담기</button>
-        </div>
-        <div id="directList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">장바구니가 비어있습니다.</p></div>
       </div>
     </div>
 
@@ -88,7 +88,7 @@
       <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
 
       <div class="price-box">
-        <div class="price-row"><span>상품금</span><b id="sumItem">0원</b></div>
+        <div class="price-row"><span>상품금액</span><b id="sumItem">0원</b></div>
         <div class="price-row"><span>배송비</span><b id="sumShipping">0원</b></div>
         <div class="price-total"><span>총 결제금액</span><b id="sumTotal">0원</b></div>
       </div>
@@ -114,7 +114,7 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
     let currentItems = [];
-    let activeTab = 'live';
+    let activeTab = 'direct'; // 기본 활성 탭을 direct로 설정
     let productMaster = {};
 
     window.onload = async () => {
@@ -126,7 +126,6 @@
         document.getElementById('address').value = saved.address;
         document.getElementById('detailAddress').value = saved.detailAddress;
       }
-      // 상품 마스터 로드
       try {
         const res = await fetch(`${API_URL}?action=products`);
         const data = await res.json();
@@ -140,13 +139,14 @@
       activeTab = tab;
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-      if(tab === 'live') {
+      if(tab === 'direct') {
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('tab-live').classList.add('active');
+        document.getElementById('tab-direct').classList.add('active');
       } else {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('tab-direct').classList.add('active');
+        document.getElementById('tab-live').classList.add('active');
       }
+      renderCart();
     }
 
     function searchAddress() {
@@ -175,7 +175,7 @@
       if(!code) return alert('상품번호를 입력해주세요.');
       
       const prod = productMaster[code];
-      if(!prod) return alert('존재하지 않는 상품번호입니다.');
+      if(!prod) return alert('존재하지 않는 상품번호입니다. (상품목록 시트 및 Apps Script 배포 상태를 확인해주세요)');
 
       currentItems.push({
         code: code,
@@ -196,12 +196,14 @@
     }
 
     function renderCart() {
-      const listEl = activeTab === 'live' ? document.getElementById('orderList') : document.getElementById('directList');
+      const listEl = activeTab === 'direct' ? document.getElementById('directList') : document.getElementById('orderList');
       listEl.innerHTML = '';
       let itemTotal = 0;
 
       if(currentItems.length === 0) {
-        listEl.innerHTML = '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">상품 내역이 없습니다.</p>';
+        listEl.innerHTML = activeTab === 'direct' 
+          ? '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">장바구니가 비어있습니다.</p>'
+          : '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p>';
       }
 
       currentItems.forEach((item, idx) => {

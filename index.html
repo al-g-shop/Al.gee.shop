@@ -21,7 +21,6 @@
     .header h1 { font-size: 22px; margin: 0; color: var(--primary); font-weight: 900; letter-spacing: -0.5px; }
     .header a { text-decoration: none; font-size: 15px; font-weight: bold; color: #d63384; background: #fff; padding: 10px 18px; border-radius: 25px; box-shadow: 0 2px 6px rgba(255, 77, 109, 0.15); border: 1px solid var(--border); }
 
-    /* 최상단 통합 안내 카드 (핑크톤 & 큼직한 글씨) */
     .guide-card { background: #fff; border: 2px solid #ffb3c6; border-radius: 18px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.08); }
     .guide-title { font-size: 18px; font-weight: 900; color: var(--primary); margin: 0 0 12px 0; display: flex; align-items: center; gap: 6px; }
     .guide-list { list-style: none; padding: 0; margin: 0; font-size: 15px; line-height: 1.7; color: #444; }
@@ -37,13 +36,11 @@
     h2 { font-size: 18px; margin-top: 0; margin-bottom: 12px; color: #111; display: flex; align-items: center; gap: 8px; font-weight: 800; }
     p { font-size: 15px; color: #555; line-height: 1.5; margin-top: 0; }
     
-    /* 입력창 및 셀렉트 대형화 */
     input, select { width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid #ffd1d8; border-radius: 12px; box-sizing: border-box; font-size: 16px; background: #fff; color: #333; transition: all 0.2s; }
     input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15); }
     
     .row { display: flex; gap: 10px; }
     
-    /* 버튼 대형화 및 핑크 무드 */
     button { padding: 16px 20px; background: #333; color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; white-space: nowrap; transition: background 0.2s; }
     button.primary { background: var(--primary); font-size: 18px; }
     button.primary:hover { background: var(--primary-hover); }
@@ -65,7 +62,6 @@
     
     .nickname-box { background: #fff5f7; border: 2px solid #ff758c; padding: 18px; border-radius: 14px; margin-bottom: 15px; }
 
-    /* 배송비 클릭형 카드 스타일 (대형화) */
     .shipping-grid { display: flex; gap: 10px; margin-bottom: 18px; }
     .shipping-card { flex: 1; border: 2px solid #ffd1d8; border-radius: 12px; padding: 16px 12px; text-align: center; cursor: pointer; background: #fff; transition: all 0.2s; }
     .shipping-card.selected { border-color: var(--primary); background: #fff0f3; box-shadow: 0 0 0 2px var(--primary); }
@@ -86,7 +82,6 @@
       <a href="customer.html">🔍 주문조회하기</a>
     </div>
 
-    <!-- 최상단 통합 안내창 -->
     <div class="guide-card">
       <div class="guide-title">✨ 알지언니Live 주문 · 입금 안내</div>
       <ul class="guide-list">
@@ -138,11 +133,11 @@
     <div class="card">
       <h2>배송지 및 입금자 정보 입력</h2>
 
-      <!-- 유튜브 닉네임 필수 입력란 -->
+      <!-- 유튜브 닉네임 입력란 (Blur 시 DB에서 기존 주소 자동 불러오기 연동) -->
       <div class="nickname-box">
         <label for="nickname" style="font-size:15px; font-weight:bold; color:var(--primary); margin-bottom:6px; display:block;">🔴 유튜브 닉네임 (필수 작성)</label>
-        <p style="font-size:13px; color:#666; margin-bottom:10px;">입금 확인용이므로 방송에서 쓰시는 닉네임을 정확히 적어주세요.</p>
-        <input type="text" id="nickname" placeholder="유튜브 닉네임 입력" style="margin-bottom:0; background:#fff;" required>
+        <p style="font-size:13px; color:#666; margin-bottom:10px;">입금 확인용이므로 방송에서 쓰시는 닉네임을 정확히 적어주세요. (이전에 주문하신 분은 자동 입력됩니다!)</p>
+        <input type="text" id="nickname" placeholder="유튜브 닉네임 입력 후 다른 칸을 누르면 주소가 자동 불러와집니다" onblur="loadCustomerInfo()" style="margin-bottom:0; background:#fff;" required>
       </div>
 
       <input type="text" id="name" placeholder="수령인 성함 (필수)">
@@ -154,7 +149,6 @@
       <input type="text" id="address" placeholder="기본주소" readonly>
       <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
 
-      <!-- 배송지역 클릭형 카드 선택 -->
       <div style="margin-top: 18px;">
         <label style="font-size: 14px; font-weight: bold; color: #444; display: block; margin-bottom: 10px;">🚚 배송지역 선택</label>
         <div class="shipping-grid">
@@ -218,16 +212,35 @@
       renderCart();
     }
 
-    // 페이지 로드 시 로컬스토리지에 저장된 고객 정보 자동 불러오기
-    window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem('algee_customer_info') || '{}');
-      if (saved.nickname) document.getElementById('nickname').value = saved.nickname;
-      if (saved.name) document.getElementById('name').value = saved.name;
-      if (saved.phone) document.getElementById('phone').value = saved.phone;
-      if (saved.zipcode) document.getElementById('zipcode').value = saved.zipcode;
-      if (saved.address) document.getElementById('address').value = saved.address;
-      if (saved.detailAddress) document.getElementById('detailAddress').value = saved.detailAddress;
-    };
+    // [신규] 닉네임 입력 후 칸을 벗어났을 때 스프레드시트 DB에서 기존 주소 자동 불러오기
+    async function loadCustomerInfo() {
+      const nickname = document.getElementById('nickname').value.trim();
+      if (!nickname) return;
+
+      try {
+        const res = await fetch(`${API_URL}?action=getCustomerInfo&nickname=${encodeURIComponent(nickname)}`);
+        const data = await res.json();
+        
+        if (data.success && data.info) {
+          const info = data.info;
+          document.getElementById('name').value = info.name || '';
+          document.getElementById('phone').value = info.phone || '';
+          document.getElementById('zipcode').value = info.zipcode || '';
+          document.getElementById('address').value = info.address || '';
+          document.getElementById('detailAddress').value = info.detailAddress || '';
+          
+          // 제주/도서산간 주소 자동 감지
+          const fullAddr = (info.address || "") + " " + (info.detailAddress || "");
+          if (fullAddr.includes('제주') || fullAddr.includes('울릉') || fullAddr.includes('서귀포')) {
+            selectShipping('island');
+          }
+          
+          renderCart();
+        }
+      } catch (e) {
+        console.error("고객 정보 조회 실패", e);
+      }
+    }
 
     function switchTab(tab) {
       activeTab = tab;
@@ -270,6 +283,7 @@
       
       if(currentItems.length > 0) {
         document.getElementById('nickname').value = nick;
+        loadCustomerInfo(); // 닉네임 일치 시 주소 정보도 함께 불러오기
       }
       
       renderCart();
@@ -379,21 +393,12 @@
         totalPrice: totalAmount
       };
 
-      // 고객 정보 로컬스토리지에 자동 저장 (재방문 시 자동완성)
-      localStorage.setItem('algee_customer_info', JSON.stringify({
-        nickname: nickname,
-        name: name,
-        phone: phone,
-        zipcode: zipcode,
-        address: address,
-        detailAddress: detailAddress
-      }));
-
       document.getElementById('loadingModal').style.display = 'flex';
 
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
+        
           body: JSON.stringify(payload)
         });
         const result = await res.json();

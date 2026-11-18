@@ -190,7 +190,7 @@
     let currentItems = [];
     let activeTab = 'direct';
     let selectedArea = 'normal';
-    let hasPaidShippingToday = false; // 오늘 이미 배송비를 낸 적이 있는지 여부
+    let hasPaidShippingToday = false; // 오늘 이미 배송비를 냈는지 여부
 
     function copyAccount() {
       navigator.clipboard.writeText("48710201326715").then(() => {
@@ -247,7 +247,7 @@
         
         if (bundleData.hasPaidShipping) {
           hasPaidShippingToday = true;
-          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 내역이 있습니다!\n오늘 추가 주문은 **배송비 0원(제품 가격만 부과)** 처리됩니다. 📦`);
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 내역이 있습니다!\n오늘 추가 주문은 **배송비 0원(오직 제품 가격만 부과)** 처리됩니다. 📦`);
         } else {
           hasPaidShippingToday = false;
         }
@@ -333,10 +333,10 @@
       renderCart();
     }
 
-    // ⭐ [최종 수정] 오늘 이미 배송비를 냈다면 지역 불문하고 무조건 배송비 0원! (첫 주문은 15만 원 이상 시 무료, 일반 4천원 / 제주산간 7천원)
+    // 배송비 계산: 오늘 이미 배송비를 냈다면 추가 주문은 배송비 0원! (첫 주문은 15만 원 이상 시 무료, 일반 4천원 / 제주산간 7천원)
     function calculateShipping(itemTotal) {
       if (hasPaidShippingToday) {
-        return 0; // 오늘 이미 배송비/추가비를 냈으므로 추가 주문은 배송비 일체 0원 (제품값만 결제)
+        return 0; // 오늘 이미 배송비를 냈으므로 추가 주문은 배송비 0원
       }
 
       const isFreeEligible = itemTotal >= 150000;
@@ -369,7 +369,7 @@
       });
 
       const shipping = calculateShipping(itemTotal);
-      const totalAmount = itemTotal + shipping; // 추가 주문은 배송비 0원이므로 오직 상품금액만 총 결제금액이 됨
+      const totalAmount = itemTotal + shipping; // 제품 가격만 부과됨
 
       document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
       

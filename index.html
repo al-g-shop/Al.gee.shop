@@ -190,8 +190,7 @@
     let currentItems = [];
     let activeTab = 'direct';
     let selectedArea = 'normal';
-    let hasPaidShippingToday = false; 
-    let paidShippingAmount = 4000; // 이전에 낸 배송비 금액 (4000원 또는 7000원)
+    let hasPaidShippingToday = false; // 오늘 이미 배송비를 낸 적이 있는지 여부
 
     function copyAccount() {
       navigator.clipboard.writeText("48710201326715").then(() => {
@@ -248,11 +247,9 @@
         
         if (bundleData.hasPaidShipping) {
           hasPaidShippingToday = true;
-          paidShippingAmount = bundleData.paidShippingAmount || 4000;
-          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 내역이 있습니다!\n이번 추가 주문은 배송비가 면제되며, 첫 주문 때 내셨던 배송비(${paidShippingAmount.toLocaleString()}원)가 제품가에서 자동 차감됩니다. 📦`);
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 내역이 있습니다!\n이번 추가 주문은 배송비가 면제되며, 기본 배송비 **4,000원이 제품가에서 자동 차감**됩니다. 📦`);
         } else {
           hasPaidShippingToday = false;
-          paidShippingAmount = 4000;
         }
 
         renderCart();
@@ -336,11 +333,12 @@
       renderCart();
     }
 
-    // 배송비 계산: 오늘 이미 배송비를 냈거나 15만 원 이상이면 배송비 0원
+    // 배송비 계산: 오늘 이미 배송비를 냈다면 기본 배송비는 0원 (단, 제주/도서산간 지역은 추가비 3,000원이 그대로 붙음)
     function calculateShipping(itemTotal) {
       if (hasPaidShippingToday) {
-        return 0; 
+        return selectedArea === 'island' ? 3000 : 0; // 제주산간은 추가비 3천원만 유지, 일반은 0원
       }
+
       const isFreeEligible = itemTotal >= 150000;
       if (selectedArea === 'island') {
         return isFreeEligible ? 3000 : 7000;
@@ -372,20 +370,22 @@
 
       const shipping = calculateShipping(itemTotal);
       
-      // ⭐ [핵심] 오늘 이미 배송비를 낸 고객이라면, 2차 주문 상품가에서 첫 주문 때 낸 배송비(4,000원 또는 7,000원)만큼 자동 차감!
-      let discountAmount = hasPaidShippingToday ? paidShippingAmount : 0;
+      // ⭐ [핵심] 오늘 이미 배송비를 낸 고객이라면, 지역 상관없이 고정으로 '기본 배송비 4,000원'만 상품가에서 차감!
+      let discountAmount = hasPaidShippingToday ? 4000 : 0;
       let finalItemTotal = itemTotal - discountAmount;
       let totalAmount = finalItemTotal + shipping;
 
       let itemText = itemTotal.toLocaleString() + '원';
       if (discountAmount > 0) {
-        itemText += ` <span style="color:var(--primary); font-size:13px;">(-${discountAmount.toLocaleString()}원 이전 배송비 차감)</span>`;
+        itemText += ` <span style="color:var(--primary); font-size:13px;">(-4,000원 배송비 할인)</span>`;
       }
       document.getElementById('sumItem').innerHTML = itemText;
       
       let shippingText = shipping.toLocaleString() + '원';
-      if (hasPaidShippingToday) {
+      if (hasPaidShippingToday && selectedArea === 'normal') {
         shippingText = '0원 (오늘 이미 배송비 지불 완료 🎁)';
+      } else if (hasPaidShippingToday && selectedArea === 'island') {
+        shippingText = '3,000원 (도서산간 추가비만 적용)';
       } else if (itemTotal >= 150000 && selectedArea === 'normal') {
         shippingText = '0원 (15만 원 이상 무료)';
       } else if (itemTotal >= 150000 && selectedArea === 'island') {
@@ -413,7 +413,7 @@
       let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);
       let shipping = calculateShipping(itemTotal);
       
-      let discountAmount = hasPaidShippingToday ? paidShippingAmount : 0;
+      let discountAmount = hasPaidShippingToday ? 4000 : 0;
       let finalItemTotal = itemTotal - discountAmount;
       let totalAmount = finalItemTotal + shipping;
 
@@ -424,7 +424,7 @@
           name: '합배송 이전 배송비 차감', 
           color: '', 
           size: '', 
-          price: -discountAmount, 
+          price: -4000, 
           qty: 1 
         });
       }

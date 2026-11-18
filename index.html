@@ -3,286 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>❤️ 알지언니Live ❤️ - 주문서</title>
-  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  <style>
-    :root {
-      --primary-color: #4A607A;
-      --primary-hover: #1A2B4C;
-      --bg-color: #F4F6F9;
-      --card-bg: #FFFFFF;
-      --text-color: #333333;
-      --border-color: #E1E6EB;
+  <title>❤️ 알지언니Live ❤️주문서</title>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script>
+    function searchAddress() {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          document.getElementById('zipcode').value = data.zonecode;
+          document.getElementById('address').value = data.roadAddress || data.jibunAddress;
+          document.getElementById('detailAddress').focus();
+        }
+      }).open();
     }
-    * { box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; }
-    .container { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-    h1 { color: var(--primary-hover); text-align: center; font-size: 22px; margin: 0; }
-    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: var(--primary-color); background: #e9ecef; padding: 6px 12px; border-radius: 6px; }
-
-    .section { margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
-    .section:last-child { border-bottom: none; }
-    label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 6px; color: var(--primary-color); }
-    input[type="text"], input[type="tel"], select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
-    
-    .btn { background: var(--primary-color); color: #fff; border: none; padding: 12px 18px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 15px; transition: background 0.2s; }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #6C757D; margin-top: 6px; }
-    .btn-secondary:hover { background: #5A6268; }
-    
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
-    .cart-item-controls { display: flex; align-items: center; gap: 8px; }
-    .cart-item-controls button { width: 28px; height: 28px; border: 1px solid var(--border-color); background: #fff; border-radius: 4px; cursor: pointer; }
-    
-    .total-price { font-size: 18px; font-weight: bold; text-align: right; color: #D9534F; margin-top: 12px; }
-    .flex-row { display: flex; gap: 8px; }
-    .flex-row input { flex: 1; }
-    .flex-row button { width: auto; white-space: nowrap; }
+  </script>
+  <style>
+    body { font-family: sans-serif; background: #f8f9fa; margin: 0; padding: 15px; color: #333; }
+    .card { max-width: 500px; margin: 0 auto 15px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .header-nav { max-width: 500px; margin: 0 auto 15px; display: flex; justify-content: space-between; align-items: center; }
+    .header-nav a { text-decoration: none; color: #e63946; font-weight: bold; font-size: 14px; }
+    h2 { font-size: 18px; margin-top: 0; color: #111; }
+    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    .row { display: flex; gap: 8px; }
+    button { padding: 12px 16px; background: #222; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .item-box { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; }
+    .total-box { font-size: 16px; font-weight: bold; text-align: right; margin-top: 15px; color: #e63946; }
+    .bank-info { background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; line-height: 1.5; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h1>❤️ 알지언니Live ❤️</h1>
-    <a href="customer.html">주문조회하기 →</a>
+  <div class="header-nav">
+    <span><b>알지언니샵</b> ♡ LIVE SHOPPING</span>
+    <a href="customer.html">🔍 주문조회 하러가기 →</a>
   </div>
 
-  <!-- 1. 댓글로 주문 불러오기 -->
-  <div class="section">
-    <label for="searchNickname">라이브 방송 닉네임으로 주문 불러오기</label>
-    <div class="flex-row">
-      <input type="text" id="searchNickname" placeholder="닉네임을 입력하세요">
-      <button class="btn" onclick="fetchCommentOrder()">조회</button>
+  <div class="card">
+    <h2>1. 유튜브 닉네임 검색</h2>
+    <div class="row">
+      <input type="text" id="nickname" placeholder="댓글 쓴 닉네임 입력">
+      <button onclick="fetchOrders()">불러오기</button>
     </div>
-    <div id="commentResult" style="font-size:12px; color:#666; margin-top:4px;"></div>
+    <div id="orderList"><p style="color:#888; font-size:13px; margin:5px 0;">닉네임을 입력하고 불러오기를 눌러주세요.</p></div>
+    <div class="total-box" id="priceSummary">총 결제금액: 0원</div>
   </div>
 
-  <!-- 2. 직접 상품 추가 -->
-  <div class="section">
-    <label for="productSelect">상품 직접 추가</label>
-    <div class="flex-row">
-      <select id="productSelect">
-        <option value="">상품을 선택하세요</option>
-      </select>
-      <button class="btn btn-secondary" onclick="addSelectedProduct()">추가</button>
+  <div class="card">
+    <h2>2. 배송지 정보 입력</h2>
+    <input type="text" id="name" placeholder="수령인 성함 (필수)">
+    <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
+    <div class="row">
+      <input type="text" id="zipcode" placeholder="우편번호" readonly>
+      <button type="button" onclick="searchAddress()">주소 검색</button>
     </div>
-  </div>
+    <input type="text" id="address" placeholder="기본주소" readonly>
+    <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
 
-  <!-- 3. 장바구니 목록 -->
-  <div class="section">
-    <label>선택된 주문 상품 목록</label>
-    <div id="cartList"><p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p></div>
-    <div class="total-price" id="totalPrice">총 결제 금액: 0원</div>
-  </div>
-
-  <!-- 4. 배송지 및 주문자 정보 -->
-  <form id="orderForm" onsubmit="submitOrder(event)">
-    <div class="section">
-      <label for="nickname">주문자 닉네임</label>
-      <input type="text" id="nickname" required>
-
-      <label for="depositor">입금자명</label>
-      <input type="text" id="depositor" required>
-
-      <label for="recipient">수령인 성함</label>
-      <input type="text" id="recipient" required>
-
-      <label for="phone">연락처</label>
-      <input type="tel" id="phone" placeholder="010-0000-0000" required>
-
-      <label>배송지 주소</label>
-      <div class="flex-row">
-        <input type="text" id="zipcode" placeholder="우편번호" readonly required>
-        <button type="button" class="btn btn-secondary" onclick="execDaumPostcode()">주소 검색</button>
-      </div>
-      <input type="text" id="address1" placeholder="기본주소" readonly required>
-      <input type="text" id="address2" placeholder="상세주소를 입력하세요" required>
+    <div class="bank-info">
+      📌 <b>무통장 입금 안내</b><br>
+      • 입금 계좌: <b>국민은행 487-102-01-326715 (조일운)</b><br>
+      • 주문자 성함과 입금자 성함이 같아야 자동 확인됩니다.
     </div>
 
-    <button type="submit" class="btn" id="submitBtn">주문 완료하기</button>
-  </form>
-</div>
+    <button id="submitBtn" style="width:100%; background:#e63946; font-size:16px;" onclick="submitOrder()">주문서 제출하기</button>
+  </div>
 
-<script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
-  let productCatalog = [];
-  let cart = {};
-
-  window.onload = async function() {
-    await loadProducts();
-    loadSavedAddress();
-  };
-
-  async function loadProducts() {
-    try {
-      const res = await fetch(`${GAS_URL}?action=getProducts`);
-      productCatalog = await res.json();
-      const select = document.getElementById("productSelect");
-      
-      productCatalog.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = `[${p.id}] ${p.name} - ${p.price.toLocaleString()}원`;
-        select.appendChild(opt);
-      });
-    } catch (e) {
-      alert("상품 목록을 불러오지 못했습니다.");
-    }
-  }
-
-  async function fetchCommentOrder() {
-    const nick = document.getElementById("searchNickname").value.trim();
-    if (!nick) return alert("닉네임을 입력해주세요.");
-
-    try {
-      const res = await fetch(`${GAS_URL}?action=getComment&nickname=${encodeURIComponent(nick)}`);
-      const data = await res.json();
-      
-      if (!data.comment) {
-        document.getElementById("commentResult").textContent = "해당 닉네임의 댓글 내역이 없습니다.";
-        return;
-      }
-
-      document.getElementById("commentResult").textContent = `댓글 내역: "${data.comment}"`;
-      document.getElementById("nickname").value = nick;
-
-      productCatalog.forEach(p => {
-        const regex = new RegExp(`\\b${p.id}\\b`, 'g');
-        const matches = data.comment.match(regex);
-        if (matches) {
-          cart[p.id] = (cart[p.id] || 0) + matches.length;
-        }
-      });
-      renderCart();
-    } catch(e) {
-      alert("댓글 정보를 불러오는 중 오류가 발생했습니다.");
-    }
-  }
-
-  function addSelectedProduct() {
-    const pId = document.getElementById("productSelect").value;
-    if (!pId) return;
-    cart[pId] = (cart[pId] || 0) + 1;
-    renderCart();
-  }
-
-  function updateQty(pId, delta) {
-    if (cart[pId]) {
-      cart[pId] += delta;
-      if (cart[pId] <= 0) delete cart[pId];
-    }
-    renderCart();
-  }
-
-  function renderCart() {
-    const cartList = document.getElementById("cartList");
-    cartList.innerHTML = "";
-    let total = 0;
-    const keys = Object.keys(cart);
-
-    if (keys.length === 0) {
-      cartList.innerHTML = '<p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p>';
-      document.getElementById("totalPrice").textContent = "총 결제 금액: 0원";
-      return;
-    }
-
-    keys.forEach(id => {
-      const p = productCatalog.find(item => item.id === id);
-      if (p) {
-        const subtotal = p.price * cart[id];
-        total += subtotal;
-
-        const div = document.createElement("div");
-        div.className = "cart-item";
-        div.innerHTML = `
-          <span>[${p.id}] ${p.name} (${p.price.toLocaleString()}원)</span>
-          <div class="cart-item-controls">
-            <button type="button" onclick="updateQty('${id}', -1)">-</button>
-            <span>${cart[id]}</span>
-            <button type="button" onclick="updateQty('${id}', 1)">+</button>
-          </div>
-        `;
-        cartList.appendChild(div);
-      }
-    });
-
-    document.getElementById("totalPrice").textContent = `총 결제 금액: ${total.toLocaleString()}원`;
-  }
-
-  function execDaumPostcode() {
-    new daum.Postcode({
-      oncomplete: function(data) {
-        document.getElementById('zipcode').value = data.zonecode;
-        document.getElementById('address1').value = data.address;
-        document.getElementById('address2').focus();
-      }
-    }).open();
-  }
-
-  function loadSavedAddress() {
-    const saved = JSON.parse(localStorage.getItem("algee_address") || "{}");
-    if (saved.recipient) document.getElementById("recipient").value = saved.recipient;
-    if (saved.phone) document.getElementById("phone").value = saved.phone;
-    if (saved.zipcode) document.getElementById("zipcode").value = saved.zipcode;
-    if (saved.address1) document.getElementById("address1").value = saved.address1;
-    if (saved.address2) document.getElementById("address2").value = saved.address2;
-  }
-
-  async function submitOrder(e) {
-    e.preventDefault();
-    const keys = Object.keys(cart);
-    if (keys.length === 0) return alert("상품을 하나 이상 선택해주세요.");
-
-    const itemsSummary = keys.map(id => {
-      const p = productCatalog.find(item => item.id === id);
-      return `${p.name}(${cart[id]}개)`;
-    }).join(", ");
-
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
+    let currentItems = [];
     let totalAmount = 0;
-    keys.forEach(id => {
-      const p = productCatalog.find(item => item.id === id);
-      totalAmount += p.price * cart[id];
-    });
 
-    const payload = {
-      nickname: document.getElementById("nickname").value,
-      depositor: document.getElementById("depositor").value,
-      recipient: document.getElementById("recipient").value,
-      phone: document.getElementById("phone").value,
-      zipcode: document.getElementById("zipcode").value,
-      address1: document.getElementById("address1").value,
-      address2: document.getElementById("address2").value,
-      items: itemsSummary,
-      totalAmount: totalAmount
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');
+      if (saved.name) {
+        document.getElementById('name').value = saved.name;
+        document.getElementById('phone').value = saved.phone;
+        document.getElementById('zipcode').value = saved.zipcode;
+        document.getElementById('address').value = saved.address;
+        document.getElementById('detailAddress').value = saved.detailAddress;
+      }
     };
 
-    localStorage.setItem("algee_address", JSON.stringify({
-      recipient: payload.recipient,
-      phone: payload.phone,
-      zipcode: payload.zipcode,
-      address1: payload.address1,
-      address2: payload.address2
-    }));
-
-    document.getElementById("submitBtn").disabled = true;
-    document.getElementById("submitBtn").textContent = "주문 처리 중...";
-
-    try {
-      await fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-      alert("주문이 성공적으로 접수되었습니다!");
-      location.reload();
-    } catch(err) {
-      alert("주문 접수 중 오류가 발생했습니다.");
-      document.getElementById("submitBtn").disabled = false;
-      document.getElementById("submitBtn").textContent = "주문 완료하기";
+    async function fetchOrders() {
+      const nick = document.getElementById('nickname').value;
+      if (!nick) return alert('닉네임을 입력해주세요.');
+      
+      const res = await fetch(`${API_URL}?nickname=${encodeURIComponent(nick)}`);
+      const data = await res.json();
+      currentItems = data.orders;
+      renderOrders();
     }
-  }
-</script>
+
+    function renderOrders() {
+      const listEl = document.getElementById('orderList');
+      listEl.innerHTML = '';
+      let itemTotal = 0;
+
+      if(currentItems.length === 0) {
+        listEl.innerHTML = '<p style="color:#e63946; font-size:13px;">불러온 상품이 없습니다. 닉네임과 댓글을 확인해주세요.</p>';
+      }
+
+      currentItems.forEach(item => {
+        itemTotal += item.price * item.qty;
+        let optStr = (item.color || item.size) ? ` (${[item.color, item.size].filter(Boolean).join('/')})` : '';
+        listEl.innerHTML += `<div class="item-box">
+          <span>[${item.code}] ${item.name}${optStr}</span>
+          <b>${item.price.toLocaleString()}원</b>
+        </div>`;
+      });
+
+      const shipping = itemTotal === 0 ? 0 : (itemTotal >= 200000 ? 0 : 4000);
+      totalAmount = itemTotal + shipping;
+      document.getElementById('priceSummary').innerText = 
+        `상품금액 ${itemTotal.toLocaleString()}원 + 배송비 ${shipping.toLocaleString()}원 = 총 ${totalAmount.toLocaleString()}원`;
+    }
+
+    async function submitOrder() {
+      // 1. 필수 입력값 검증 (Validation)
+      if(currentItems.length === 0) return alert('주문할 상품을 먼저 불러와주세요.');
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const zipcode = document.getElementById('zipcode').value.trim();
+      const detailAddress = document.getElementById('detailAddress').value.trim();
+
+      if(!name) { alert('수령인 성함을 입력해주세요.'); document.getElementById('name').focus(); return; }
+      if(!phone) { alert('연락처를 입력해주세요.'); document.getElementById('phone').focus(); return; }
+      if(!zipcode) { alert('주소 검색을 통해 우편번호와 주소를 입력해주세요.'); return; }
+      if(!detailAddress) { alert('상세주소(동/호수 등)를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
+
+      // 2. 중복 클릭 방지 (버튼 비활성화)
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = "주문 접수 중...";
+
+      const payload = {
+        nickname: document.getElementById('nickname').value,
+        name: name,
+        phone: phone,
+        zipcode: zipcode,
+        address: document.getElementById('address').value,
+        detailAddress: detailAddress,
+        items: currentItems,
+        totalPrice: totalAmount
+      };
+
+      localStorage.setItem('savedAddress', JSON.stringify(payload));
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`🎉 주문이 정상 접수되었습니다!\n주문번호: ${result.orderNo}\n입금 후 배송이 시작됩니다. 감사합니다!`);
+          location.reload();
+        } else {
+          alert('접수 중 오류가 발생했습니다. 다시 시도해 주세요.');
+          btn.disabled = false;
+          btn.innerText = "주문서 제출하기";
+        }
+      } catch (e) {
+        alert('네트워크 오류가 발생했습니다.');
+        btn.disabled = false;
+        btn.innerText = "주문서 제출하기";
+      }
+    }
+  </script>
 </body>
 </html>

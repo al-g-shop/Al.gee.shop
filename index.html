@@ -240,19 +240,3 @@
       const p = productCatalog.find(item => item.id === id);
       return `${p.name}(${cart[id]}개)`;
     }).join(", ");
-
-    let totalAmount = 0;
-    keys.forEach(id => {
-      const p = productCatalog.find(item => item.id === id);
-      totalAmount += p.price * cart[id];
-    });
-
-    const payload = {
-      nickname: document.getElementById("nickname").value,
-      depositor: document.getElementById("depositor").value,
-      recipient: document.getElementById("recipient").value,
-      phone: document.getElementById("phone").value,
-      zipcode: document.getElementById("zipcode").value,
-      address1: document.getElementById("address1").value,
-      address2: document.getElementById("address2").value,
-      items

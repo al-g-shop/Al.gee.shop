@@ -47,7 +47,6 @@
       <div class="tab-btn" onclick="switchTab('live')">💬 라이브 댓글 주문</div>
     </div>
 
-    <!-- 1. 수기 직접 주문서 작성 탭 (기본 화면) -->
     <div id="tab-direct" class="section-content active">
       <div class="card">
         <h2>주문 상품 직접 입력</h2>
@@ -65,7 +64,6 @@
       </div>
     </div>
 
-    <!-- 2. 라이브 댓글 주문 탭 -->
     <div id="tab-live" class="section-content">
       <div class="card">
         <h2>유튜브 닉네임 검색</h2>
@@ -78,7 +76,6 @@
       </div>
     </div>
 
-    <!-- 배송지 및 결제 정보 공통 카드 -->
     <div class="card">
       <h2>배송지 정보 입력</h2>
       <input type="text" id="name" placeholder="수령인 성함 (필수)">
@@ -106,7 +103,6 @@
     </div>
   </div>
 
-  <!-- 처리 중 모달 -->
   <div id="loadingModal">
     <div class="loading-content">
       <h3 style="margin-top:0;">주문 접수 중...</h3>
@@ -216,7 +212,7 @@
         </div>`;
       });
 
-      const shipping = itemTotal === 0 ? 0 : (itemTotal >= 200000 ? 0 : 4000);
+      const shipping = itemTotal === 0 ? 0 : (itemTotal >= 150000 ? 0 : 4000);
       const totalAmount = itemTotal + shipping;
 
       document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
@@ -237,7 +233,7 @@
       if(!detailAddress) { alert('상세주소를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
 
       let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);
-      let shipping = itemTotal >= 200000 ? 0 : 4000;
+      let shipping = itemTotal >= 150000 ? 0 : 4000;
       let totalAmount = itemTotal + shipping;
 
       const payload = {

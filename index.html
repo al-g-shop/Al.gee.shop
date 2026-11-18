@@ -7,35 +7,37 @@
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
     :root {
-      --primary-color: #e63946;
-      --primary-hover: #c5283d;
-      --bg-color: #f8f9fa;
+      --primary-color: #4A607A;
+      --primary-hover: #1A2B4C;
+      --bg-color: #F4F6F9;
       --card-bg: #FFFFFF;
       --text-color: #333333;
       --border-color: #E1E6EB;
     }
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; }
-    .container { max-width: 520px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    * { box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-    h1 { color: var(--primary-color); font-size: 20px; margin: 0; font-weight: 800; }
-    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: #555; background: #f1f3f5; padding: 6px 12px; border-radius: 20px; }
+    h1 { color: var(--primary-hover); text-align: center; font-size: 22px; margin: 0; }
+    .header a { text-decoration: none; font-size: 13px; font-weight: bold; color: var(--primary-color); background: #e9ecef; padding: 6px 12px; border-radius: 6px; }
 
-    .section { margin-bottom: 20px; background: #fafafa; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
-    label { font-weight: bold; font-size: 13px; display: block; margin-bottom: 6px; color: #444; }
-    input[type="text"], input[type="tel"], select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 8px; font-size: 14px; box-sizing: border-box; }
+    .section { margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+    .section:last-child { border-bottom: none; }
+    label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 6px; color: var(--primary-color); }
+    input[type="text"], input[type="tel"], select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
     
-    .btn { background: #222; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; }
-    .btn:hover { background: #000; }
-    .btn-secondary { background: #6c757d; }
+    .btn { background: var(--primary-color); color: #fff; border: none; padding: 12px 18px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 15px; transition: background 0.2s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #6C757D; margin-top: 6px; }
+    .btn-secondary:hover { background: #5A6268; }
     
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #ddd; font-size: 14px; }
-    .cart-item-controls { display: flex; align-items: center; gap: 6px; }
-    .cart-item-controls button { width: 26px; height: 26px; border: 1px solid #ddd; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
+    .cart-item-controls { display: flex; align-items: center; gap: 8px; }
+    .cart-item-controls button { width: 28px; height: 28px; border: 1px solid var(--border-color); background: #fff; border-radius: 4px; cursor: pointer; }
     
-    .total-price { font-size: 17px; font-weight: bold; text-align: right; color: var(--primary-color); margin-top: 15px; }
-    .flex-row { display: flex; gap: 6px; }
+    .total-price { font-size: 18px; font-weight: bold; text-align: right; color: #D9534F; margin-top: 12px; }
+    .flex-row { display: flex; gap: 8px; }
     .flex-row input { flex: 1; }
     .flex-row button { width: auto; white-space: nowrap; }
   </style>
@@ -53,40 +55,40 @@
     <label for="searchNickname">라이브 방송 닉네임으로 주문 불러오기</label>
     <div class="flex-row">
       <input type="text" id="searchNickname" placeholder="닉네임을 입력하세요">
-      <button class="btn" onclick="fetchCommentOrder()" style="width: 80px;">조회</button>
+      <button class="btn" onclick="fetchCommentOrder()">조회</button>
     </div>
-    <div id="commentResult" style="font-size:12px; color:#e63946; margin-top:4px; font-weight:bold;"></div>
+    <div id="commentResult" style="font-size:12px; color:#666; margin-top:4px;"></div>
   </div>
 
   <!-- 2. 직접 상품 추가 -->
   <div class="section">
-    <label for="productSelect">상품 직접 선택하기</label>
+    <label for="productSelect">상품 직접 추가</label>
     <div class="flex-row">
       <select id="productSelect">
         <option value="">상품을 선택하세요</option>
       </select>
-      <button class="btn btn-secondary" onclick="addSelectedProduct()" style="width: 80px;">추가</button>
+      <button class="btn btn-secondary" onclick="addSelectedProduct()">추가</button>
     </div>
   </div>
 
   <!-- 3. 장바구니 목록 -->
   <div class="section">
-    <label>🛒 선택된 주문 상품 목록</label>
-    <div id="cartList"><p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">담긴 상품이 없습니다.</p></div>
+    <label>선택된 주문 상품 목록</label>
+    <div id="cartList"><p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p></div>
     <div class="total-price" id="totalPrice">총 결제 금액: 0원</div>
   </div>
 
   <!-- 4. 배송지 및 주문자 정보 -->
   <form id="orderForm" onsubmit="submitOrder(event)">
     <div class="section">
-      <label for="nickname">주문자 닉네임 (방송 닉네임)</label>
-      <input type="text" id="nickname" placeholder="예: 알지러브" required>
+      <label for="nickname">주문자 닉네임</label>
+      <input type="text" id="nickname" required>
 
       <label for="depositor">입금자명</label>
-      <input type="text" id="depositor" placeholder="입금하시는 분 성함" required>
+      <input type="text" id="depositor" required>
 
       <label for="recipient">수령인 성함</label>
-      <input type="text" id="recipient" placeholder="받으시는 분 성함" required>
+      <input type="text" id="recipient" required>
 
       <label for="phone">연락처</label>
       <input type="tel" id="phone" placeholder="010-0000-0000" required>
@@ -100,7 +102,7 @@
       <input type="text" id="address2" placeholder="상세주소를 입력하세요" required>
     </div>
 
-    <button type="submit" class="btn" id="submitBtn" style="background: var(--primary-color); padding: 14px; font-size: 16px;">주문 완료하기</button>
+    <button type="submit" class="btn" id="submitBtn">주문 완료하기</button>
   </form>
 </div>
 
@@ -116,15 +118,14 @@
 
   async function loadProducts() {
     try {
-      const res = await fetch(`${GAS_URL}?action=products`);
-      const data = await res.json();
-      productCatalog = data.products || [];
+      const res = await fetch(`${GAS_URL}?action=getProducts`);
+      productCatalog = await res.json();
       const select = document.getElementById("productSelect");
       
       productCatalog.forEach(p => {
         const opt = document.createElement("option");
-        opt.value = p.code;
-        opt.textContent = `[${p.code}] ${p.name} - ${p.price.toLocaleString()}원`;
+        opt.value = p.id;
+        opt.textContent = `[${p.id}] ${p.name} - ${p.price.toLocaleString()}원`;
         select.appendChild(opt);
       });
     } catch (e) {
@@ -136,35 +137,34 @@
     const nick = document.getElementById("searchNickname").value.trim();
     if (!nick) return alert("닉네임을 입력해주세요.");
 
-    const resultDiv = document.getElementById("commentResult");
-    resultDiv.textContent = "조회 중...";
-
     try {
-      const res = await fetch(`${GAS_URL}?nickname=${encodeURIComponent(nick)}`);
+      const res = await fetch(`${GAS_URL}?action=getComment&nickname=${encodeURIComponent(nick)}`);
       const data = await res.json();
       
-      if (!data.orders || data.orders.length === 0) {
-        resultDiv.textContent = "해당 닉네임의 주문 댓글이 없습니다.";
+      if (!data.comment) {
+        document.getElementById("commentResult").textContent = "해당 닉네임의 댓글 내역이 없습니다.";
         return;
       }
 
-      resultDiv.textContent = `✨ ${nick}님의 댓글 주문을 불러왔습니다!`;
+      document.getElementById("commentResult").textContent = `댓글 내역: "${data.comment}"`;
       document.getElementById("nickname").value = nick;
 
-      cart = {};
-      data.orders.forEach(ord => {
-        const key = ord.code;
-        cart[key] = (cart[key] || 0) + ord.qty;
+      productCatalog.forEach(p => {
+        const regex = new RegExp(`\\b${p.id}\\b`, 'g');
+        const matches = data.comment.match(regex);
+        if (matches) {
+          cart[p.id] = (cart[p.id] || 0) + matches.length;
+        }
       });
       renderCart();
     } catch(e) {
-      resultDiv.textContent = "댓글 정보를 불러오는 중 오류가 발생했습니다.";
+      alert("댓글 정보를 불러오는 중 오류가 발생했습니다.");
     }
   }
 
   function addSelectedProduct() {
     const pId = document.getElementById("productSelect").value;
-    if (!pId) return alert("상품을 선택해주세요.");
+    if (!pId) return;
     cart[pId] = (cart[pId] || 0) + 1;
     renderCart();
   }
@@ -184,13 +184,13 @@
     const keys = Object.keys(cart);
 
     if (keys.length === 0) {
-      cartList.innerHTML = '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">담긴 상품이 없습니다.</p>';
+      cartList.innerHTML = '<p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p>';
       document.getElementById("totalPrice").textContent = "총 결제 금액: 0원";
       return;
     }
 
     keys.forEach(id => {
-      const p = productCatalog.find(item => String(item.code) === String(id));
+      const p = productCatalog.find(item => item.id === id);
       if (p) {
         const subtotal = p.price * cart[id];
         total += subtotal;
@@ -198,7 +198,7 @@
         const div = document.createElement("div");
         div.className = "cart-item";
         div.innerHTML = `
-          <span>[${p.code}] ${p.name}</span>
+          <span>[${p.id}] ${p.name} (${p.price.toLocaleString()}원)</span>
           <div class="cart-item-controls">
             <button type="button" onclick="updateQty('${id}', -1)">-</button>
             <span>${cart[id]}</span>
@@ -236,67 +236,23 @@
     const keys = Object.keys(cart);
     if (keys.length === 0) return alert("상품을 하나 이상 선택해주세요.");
 
-    let itemsList = [];
+    const itemsSummary = keys.map(id => {
+      const p = productCatalog.find(item => item.id === id);
+      return `${p.name}(${cart[id]}개)`;
+    }).join(", ");
+
     let totalAmount = 0;
-    
     keys.forEach(id => {
-      const p = productCatalog.find(item => String(item.code) === String(id));
-      if (p) {
-        itemsList.push({
-          code: p.code,
-          name: p.name,
-          color: "",
-          size: "",
-          price: p.price,
-          qty: cart[id]
-        });
-        totalAmount += p.price * cart[id];
-      }
+      const p = productCatalog.find(item => item.id === id);
+      totalAmount += p.price * cart[id];
     });
 
     const payload = {
       nickname: document.getElementById("nickname").value,
       depositor: document.getElementById("depositor").value,
-      name: document.getElementById("recipient").value,
+      recipient: document.getElementById("recipient").value,
       phone: document.getElementById("phone").value,
       zipcode: document.getElementById("zipcode").value,
-      address: document.getElementById("address1").value,
-      detailAddress: document.getElementById("address2").value,
-      items: itemsList,
-      totalPrice: totalAmount
-    };
-
-    localStorage.setItem("algee_address", JSON.stringify({
-      recipient: payload.name,
-      phone: payload.phone,
-      zipcode: payload.zipcode,
-      address1: payload.address,
-      address2: payload.detailAddress
-    }));
-
-    const submitBtn = document.getElementById("submitBtn");
-    submitBtn.disabled = true;
-    submitBtn.textContent = "주문 접수 중...";
-
-    try {
-      const res = await fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-      
-      if(result.success) {
-        alert(`주문이 완료되었습니다! (주문번호: ${result.orderNo})`);
-        location.reload();
-      } else {
-        throw new Error();
-      }
-    } catch(err) {
-      alert("주문 접수 중 오류가 발생했습니다. 다시 시도해주세요.");
-      submitBtn.disabled = false;
-      submitBtn.textContent = "주문 완료하기";
-    }
-  }
-</script>
-</body>
-</html>
+      address1: document.getElementById("address1").value,
+      address2: document.getElementById("address2").value,
+      items

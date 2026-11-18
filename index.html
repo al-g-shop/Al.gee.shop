@@ -247,7 +247,7 @@
         
         if (bundleData.hasTodayOrder) {
           todayExistingTotal = bundleData.existingOrderTotal;
-          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 주문하신 내역이 있습니다!\n총합이 15만 원 이상이므로, 이번 주문에서는 **이미 냈던 배송비 4,000원이 차감되어 상품가만 결제**됩니다. 📦`);
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 주문하신 내역이 있습니다!\n이번 주문은 총합이 15만 원을 넘으므로, **기본 배송비 4,000원이 차감되어 상품가에서 할인 적용**됩니다. 📦`);
         } else {
           todayExistingTotal = 0;
         }
@@ -333,17 +333,15 @@
       renderCart();
     }
 
-    // 스마트 배송비 계산 (당일 총합이 15만 원 이상이 되면 이번 주문 배송비에서 4,000원 자동 차감)
+    // 스마트 배송비 계산 (15만 원 초과 시 배송비 자리에 -4,000원 차감 적용)
     function calculateShipping(itemTotal) {
       const combinedTotal = itemTotal + todayExistingTotal;
       const isOver150k = combinedTotal >= 150000;
 
       if (selectedArea === 'island') {
-        // 제주/도서산간: 총합 15만 이상이면 추가 배송비 3천원만 남기고 기본 배송비 4천원은 면제/차감
         return isOver150k ? 3000 : 7000;
       } else {
-        // 일반 지역: 총합 15만 이상이면 배송비 0원 (이미 첫주문에 낸 4천원 효과 반영)
-        return isOver150k ? 0 : 4000;
+        return isOver150k ? -4000 : 4000;
       }
     }
 
@@ -376,11 +374,11 @@
       
       let shippingText = shipping.toLocaleString() + '원';
       if (todayExistingTotal > 0 && combinedTotal >= 150000 && selectedArea === 'normal') {
-        shippingText = '0원 (총 15만 원 초과로 첫 배송비 4,000원 차감 적용 🎁)';
+        shippingText = '-4,000원 (앞서 낸 배송비 차감 적용 🎁)';
       } else if (itemTotal >= 150000 && selectedArea === 'normal') {
         shippingText = '0원 (15만 원 이상 무료)';
       } else if (combinedTotal >= 150000 && selectedArea === 'island') {
-        shippingText = '3,000원 (도서산간 추가비만 적용)';
+        shippingText = '-1,000원 (도서산간비 3천원 - 첫배송비 4천원 차감)';
       }
       document.getElementById('sumShipping').innerText = shippingText;
       document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
@@ -406,10 +404,10 @@
       let totalAmount = itemTotal + shipping;
 
       const finalItems = [...currentItems];
-      if (shipping > 0) {
+      if (shipping !== 0) {
         finalItems.push({ 
           code: '배송비', 
-          name: selectedArea === 'island' ? '제주/도서산간 추가배송비' : '기본 배송비', 
+          name: shipping < 0 ? '합배송 이전 배송비 차감' : (selectedArea === 'island' ? '제주/도서산간 추가배송비' : '기본 배송비'), 
           color: '', 
           size: '', 
           price: shipping, 

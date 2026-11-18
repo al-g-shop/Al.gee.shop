@@ -36,13 +36,24 @@
     .cart-item-controls { display: flex; align-items: center; gap: 8px; }
     .cart-item-controls button { width: 28px; height: 28px; border: 1px solid var(--border-color); background: #fff; border-radius: 4px; cursor: pointer; }
     
-    .total-price { font-size: 18px; font-weight: bold; text-align: right; color: #D9534F; margin-top: 12px; }
+    /* 금액 요약 스타일 */
+    .price-summary { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 14px; line-height: 1.6; border: 1px solid var(--border-color); }
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .total-price { font-size: 18px; font-weight: bold; text-align: right; color: #D9534F; margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px; }
+
     .flex-row { display: flex; gap: 8px; }
     .flex-row input { flex: 1; }
     .flex-row button { width: auto; white-space: nowrap; }
 
-    /* 계좌번호 및 안내 박스 스타일 */
+    /* 계좌번호 안내 및 배송지 선택 박스 */
     .notice-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; line-height: 1.6; }
+    .copy-btn { background: #856404; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-left: 6px; }
+    
+    /* 배송비 클릭형 카드 스타일 */
+    .shipping-options { display: flex; gap: 10px; margin-bottom: 10px; }
+    .shipping-card { flex: 1; border: 2px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; background: #fff; transition: all 0.2s; font-size: 13px; font-weight: bold; }
+    .shipping-card input { display: none; }
+    .shipping-card.selected { border-color: var(--primary-color); background: #e8f0fe; color: var(--primary-hover); }
   </style>
 </head>
 <body>
@@ -53,12 +64,13 @@
     <a href="customer.html">주문조회하기 →</a>
   </div>
 
-  <!-- 안내 문구 박스 (국민은행 계좌 포함) -->
+  <!-- 안내 문구 박스 (국민은행 계좌 + 복사 버튼) -->
   <div class="notice-box">
     <b>✨ 알지언니Live 방송 주문서 안내 ✨</b><br>
-    - 유튜브 라이브 방송 시 사용하시는 <b>유튜브 닉네임</b>을 입력하시면 댓글 주문을 쉽게 불러오실 수 있습니다.<br>
-    - 무통장 입금 계좌: <b>국민은행 487-102-01-326715</b> (예금주: 조일운)<br>
-    - 주문 후 입금자명과 금액이 일치해야 빠르게 확인됩니다!
+    - 유튜브 라이브 방송 닉네임을 입력하시면 댓글 주문을 쉽게 불러올 수 있습니다.<br>
+    - 무통장 입금 계좌: <b>국민은행 123-456-789012</b> (예금주: 조일운)<br>
+    <button type="button" class="copy-btn" onclick="copyAccount()">계좌번호 복사하기</button><br>
+    - <b>15만원 이상 구매 시 무료배송!</b> (제주/도서산간은 추가배송비 3,000원 결제)
   </div>
 
   <!-- 1. 댓글로 주문 불러오기 -->
@@ -86,7 +98,27 @@
   <div class="section">
     <label>선택된 주문 상품 목록</label>
     <div id="cartList"><p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p></div>
-    <div class="total-price" id="totalPrice">총 결제 금액: 0원</div>
+    
+    <!-- 배송비 선택 (양방향 클릭형) -->
+    <div style="margin-top: 15px;">
+      <label>배송지 구분 선택</label>
+      <div class="shipping-options">
+        <label class="shipping-card selected" id="cardGeneral" onclick="setShipping('general')">
+          <input type="radio" name="shipping" value="general" checked>
+          <b>일반택배</b><br><span style="font-weight:normal; font-size:12px;">4,000원 (15만 이상 무료)</span>
+        </label>
+        <label class="shipping-card" id="cardIsland" onclick="setShipping('island')">
+          <input type="radio" name="shipping" value="island">
+          <b>제주/도서산간</b><br><span style="font-weight:normal; font-size:12px;">7,000원 (15만 이상 3,000원)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="price-summary">
+      <div class="price-row"><span>상품 합계금액:</span> <span id="productTotal">0원</span></div>
+      <div class="price-row"><span>배송비:</span> <span id="shippingFee">4,000원</span></div>
+      <div class="total-price" id="totalPrice">총 결제 금액: 0원</div>
+    </div>
   </div>
 
   <!-- 4. 배송지 및 주문자 정보 -->
@@ -121,11 +153,29 @@
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
   let productCatalog = [];
   let cart = {};
+  let shippingType = 'general'; // 기본값 일반택배
 
   window.onload = async function() {
     await loadProducts();
     loadSavedAddress();
   };
+
+  function copyAccount() {
+    const accountNumber = "국민은행 123-456-789012 (예금주: 조일운)";
+    navigator.clipboard.writeText(accountNumber).then(() => {
+      alert("계좌번호가 복사되었습니다! 📋");
+    }).catch(() => {
+      alert("복사 실패. 직접 확인해 주세요.");
+    });
+  }
+
+  function setShipping(type) {
+    shippingType = type;
+    document.getElementById('cardGeneral').className = type === 'general' ? 'shipping-card selected' : 'shipping-card';
+    document.getElementById('cardIsland' ).className = type === 'island' ? 'shipping-card selected' : 'shipping-card';
+    document.querySelector(`input[name="shipping"][value="${type}"]`).checked = true;
+    renderCart();
+  }
 
   async function loadProducts() {
     try {
@@ -191,11 +241,13 @@
   function renderCart() {
     const cartList = document.getElementById("cartList");
     cartList.innerHTML = "";
-    let total = 0;
+    let productTotal = 0;
     const keys = Object.keys(cart);
 
     if (keys.length === 0) {
       cartList.innerHTML = '<p style="color:#888; font-size:13px;">담긴 상품이 없습니다.</p>';
+      document.getElementById("productTotal").textContent = "0원";
+      document.getElementById("shippingFee").textContent = "4,000원";
       document.getElementById("totalPrice").textContent = "총 결제 금액: 0원";
       return;
     }
@@ -204,7 +256,7 @@
       const p = productCatalog.find(item => item.id === id);
       if (p) {
         const subtotal = p.price * cart[id];
-        total += subtotal;
+        productTotal += subtotal;
 
         const div = document.createElement("div");
         div.className = "cart-item";
@@ -220,7 +272,19 @@
       }
     });
 
-    document.getElementById("totalPrice").textContent = `총 결제 금액: ${total.toLocaleString()}원`;
+    // 배송비 계산 로직 (15만원 이상 무료배송, 제주도는 3천원 결제)
+    let shippingFee = 4000;
+    if (shippingType === 'general') {
+      shippingFee = productTotal >= 150000 ? 0 : 4000;
+    } else if (shippingType === 'island') {
+      shippingFee = productTotal >= 150000 ? 3000 : 7000;
+    }
+
+    const grandTotal = productTotal + shippingFee;
+
+    document.getElementById("productTotal").textContent = productTotal.toLocaleString() + "원";
+    document.getElementById("shippingFee").textContent = shippingFee.toLocaleString() + "원" + (shippingFee === 0 ? " (무료배송)" : "");
+    document.getElementById("totalPrice").textContent = `총 결제 금액: ${grandTotal.toLocaleString()}원`;
   }
 
   function execDaumPostcode() {
@@ -247,16 +311,26 @@
     const keys = Object.keys(cart);
     if (keys.length === 0) return alert("상품을 하나 이상 선택해주세요.");
 
+    let productTotal = 0;
+    keys.forEach(id => {
+      const p = productCatalog.find(item => item.id === id);
+      productTotal += p.price * cart[id];
+    });
+
+    let shippingFee = 4000;
+    if (shippingType === 'general') {
+      shippingFee = productTotal >= 150000 ? 0 : 4000;
+    } else if (shippingType === 'island') {
+      shippingFee = productTotal >= 150000 ? 3000 : 7000;
+    }
+
+    const shippingName = shippingType === 'general' ? '일반택배' : '제주/도서산간';
     const itemsSummary = keys.map(id => {
       const p = productCatalog.find(item => item.id === id);
       return `${p.name}(${cart[id]}개)`;
-    }).join(", ");
+    }).join(", ") + ` [배송비: ${shippingName} ${shippingFee.toLocaleString()}원 포함]`;
 
-    let totalAmount = 0;
-    keys.forEach(id => {
-      const p = productCatalog.find(item => item.id === id);
-      totalAmount += p.price * cart[id];
-    });
+    let totalAmount = productTotal + shippingFee;
 
     const payload = {
       nickname: document.getElementById("nickname").value,

@@ -247,7 +247,7 @@
         
         if (bundleData.hasPaidShipping) {
           hasPaidShippingToday = true;
-          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 주문이 있습니다!\n오늘 3번, 4번, 5번... 몇 번을 더 주문하시든 **배송비는 추가로 붙지 않고 0원(면제)**됩니다. 📦`);
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 주문이 있습니다!\n오늘 추가 주문은 **배송비 0원 및 이전 배송비 4,000원 할인(-4,000원)**이 적용됩니다. 📦`);
         } else {
           hasPaidShippingToday = false;
         }
@@ -333,13 +333,11 @@
       renderCart();
     }
 
-    // 스마트 배송비 계산 (오늘 이미 배송비를 낸 적이 있다면 일반/제주산간 상관없이 무조건 0원 면제!)
     function calculateShipping(itemTotal) {
       if (hasPaidShippingToday) {
-        return 0; // 지역 불문하고 추가 배송비 0원
+        return 0; // 오늘 이미 배송비를 냈으므로 추가 배송비는 0원
       }
 
-      // 첫 주문인 경우 (15만 원 이상 무료, 그 외 일반 4천원 / 제주산간 7천원)
       const isFreeEligible = itemTotal >= 150000;
       if (selectedArea === 'island') {
         return isFreeEligible ? 3000 : 7000;
@@ -370,9 +368,18 @@
       });
 
       const shipping = calculateShipping(itemTotal);
-      const totalAmount = itemTotal + shipping;
+      
+      // ⭐ [핵심 수정] 오늘 이미 배송비를 낸 고객이라면, 상품 총액에서 앞서 낸 배송비 4,000원 자동 차감 적용!
+      let discountAmount = 0;
+      if (hasPaidShippingToday) {
+        discountAmount = 4000;
+      }
 
-      document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
+      const finalItemTotal = itemTotal - discountAmount; // 차감된 상품금액
+      const totalAmount = finalItemTotal + shipping;     // 최종 결제금액
+
+      // 화면에 반영
+      document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원' + (discountAmount > 0 ? ` (-배송비 4,000원 차감)` : '');
       
       let shippingText = shipping.toLocaleString() + '원';
       if (hasPaidShippingToday) {
@@ -403,9 +410,22 @@
 
       let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);
       let shipping = calculateShipping(itemTotal);
-      let totalAmount = itemTotal + shipping;
+      
+      let discountAmount = hasPaidShippingToday ? 4000 : 0;
+      let finalItemTotal = itemTotal - discountAmount;
+      let totalAmount = finalItemTotal + shipping;
 
       const finalItems = [...currentItems];
+      if (discountAmount > 0) {
+        finalItems.push({ 
+          code: '할인', 
+          name: '합배송 이전 배송비 차감', 
+          color: '', 
+          size: '', 
+          price: -4000, 
+          qty: 1 
+        });
+      }
       if (shipping > 0) {
         finalItems.push({ 
           code: '배송비', 

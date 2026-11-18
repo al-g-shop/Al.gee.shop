@@ -22,8 +22,7 @@
     button:disabled { background: #ccc; cursor: not-allowed; }
     .item-box { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; gap: 8px; }
     .price-box { background: #fafafa; border: 1px solid var(--border); padding: 14px; border-radius: 10px; margin-top: 15px; font-size: 14px; }
-    .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .free-badge { font-size: 11px; background: #ffe3e3; color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
     .price-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; color: var(--primary); border-top: 1px dashed #ddd; padding-top: 8px; margin-top: 8px; }
     .bank-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; font-size: 13px; margin: 12px 0; line-height: 1.5; color: #c53030; }
     .tab-menu { display: flex; margin-bottom: 15px; background: #eee; padding: 3px; border-radius: 10px; }
@@ -85,4 +84,195 @@
       <input type="text" id="name" placeholder="수령인 성함 (필수)">
       <input type="tel" id="phone" placeholder="연락처 숫자만 입력 (필수)">
       <div class="row">
-        <input type="text" id="zipcode" placeholder="우편번호"
+        <input type="text" id="zipcode" placeholder="우편번호" readonly>
+        <button type="button" onclick="searchAddress()" style="height: 43px;">주소 검색</button>
+      </div>
+      <input type="text" id="address" placeholder="기본주소" readonly>
+      <input type="text" id="detailAddress" placeholder="상세주소 입력 (동/호수)">
+
+      <div class="price-box">
+        <div class="price-row"><span>상품금액</span><b id="sumItem">0원</b></div>
+        <div class="price-row"><span>배송비</span><b id="sumShipping">0원</b></div>
+        <div class="price-total"><span>총 결제금액</span><b id="sumTotal">0원</b></div>
+      </div>
+
+      <div class="bank-box">
+        📌 <b>무통장 입금 안내</b><br>
+        • 국민은행 487-102-01-326715 (조일운)<br>
+        • 주문자 성함과 입금자 성함이 동일해야 자동 확인됩니다.
+      </div>
+
+      <button class="primary" style="width:100%; font-size:16px;" onclick="submitOrder()">주문서 제출하기</button>
+    </div>
+  </div>
+
+  <!-- 처리 중 모달 -->
+  <div id="loadingModal">
+    <div class="loading-content">
+      <h3 style="margin-top:0;">주문 접수 중...</h3>
+      <p>잠시만 기다려주세요. 데이터를 안전하게 저장하고 있습니다.</p>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxQ0KIkw3m63VUEyAq1OFXisjXfkT1S7zozn1TlvlwK317Pn35hdcfo3AwcxvQtZIrbJQ/exec";
+    let currentItems = [];
+    let activeTab = 'direct';
+
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem('savedAddress') || '{}');
+      if (saved.name) {
+        document.getElementById('name').value = saved.name;
+        document.getElementById('phone').value = saved.phone;
+        document.getElementById('zipcode').value = saved.zipcode;
+        document.getElementById('address').value = saved.address;
+        document.getElementById('detailAddress').value = saved.detailAddress;
+      }
+    };
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+      if(tab === 'direct') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-direct').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-live').classList.add('active');
+      }
+      renderCart();
+    }
+
+    function searchAddress() {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          document.getElementById('zipcode').value = data.zonecode;
+          document.getElementById('address').value = data.roadAddress || data.jibunAddress;
+          document.getElementById('detailAddress').focus();
+        }
+      }).open();
+    }
+
+    async function fetchOrders() {
+      const nick = document.getElementById('nickname').value;
+      if (!nick) return alert('닉네임을 입력해주세요.');
+      
+      const res = await fetch(`${API_URL}?nickname=${encodeURIComponent(nick)}`);
+      const data = await res.json();
+      currentItems = data.orders || [];
+      renderCart();
+    }
+
+    function addManualItem() {
+      const itemName = document.getElementById('manualName').value.trim();
+      const opt = document.getElementById('manualOpt').value.trim();
+      const qty = parseInt(document.getElementById('manualQty').value, 10) || 1;
+      const price = parseInt(document.getElementById('manualPrice').value, 10);
+
+      if (!itemName) { alert('상품명을 입력해주세요.'); document.getElementById('manualName').focus(); return; }
+      if (isNaN(price) || price <= 0) { alert('상품 가격을 숫자로 입력해주세요.'); document.getElementById('manualPrice').focus(); return; }
+      if (qty < 1) { alert('수량은 1개 이상이어야 합니다.'); return; }
+
+      currentItems.push({
+        code: '수기',
+        name: itemName,
+        color: opt,
+        size: '',
+        price: price,
+        qty: qty
+      });
+
+      document.getElementById('manualName').value = '';
+      document.getElementById('manualOpt').value = '';
+      document.getElementById('manualQty').value = '1';
+      document.getElementById('manualPrice').value = '';
+      renderCart();
+    }
+
+    function removeItem(index) {
+      currentItems.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const listEl = activeTab === 'direct' ? document.getElementById('directList') : document.getElementById('orderList');
+      listEl.innerHTML = '';
+      let itemTotal = 0;
+
+      if(currentItems.length === 0) {
+        listEl.innerHTML = activeTab === 'direct' 
+          ? '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">담긴 상품이 없습니다.</p>'
+          : '<p style="color:#888; font-size:13px; text-align:center; margin:10px 0;">불러온 상품이 없습니다.</p>';
+      }
+
+      currentItems.forEach((item, idx) => {
+        const subTotal = item.price * item.qty;
+        itemTotal += subTotal;
+        let optStr = (item.color || item.size) ? ` (${[item.color, item.size].filter(Boolean).join('/')})` : '';
+        listEl.innerHTML += `<div class="item-box">
+          <span>[${item.code}] ${item.name}${optStr} × ${item.qty}개</span>
+          <span style="white-space:nowrap;"><b>${subTotal.toLocaleString()}원</b> <button style="padding:3px 7px; font-size:11px; background:#eee; color:#333; margin-left:4px;" onclick="removeItem(${idx})">삭제</button></span>
+        </div>`;
+      });
+
+      const shipping = itemTotal === 0 ? 0 : (itemTotal >= 200000 ? 0 : 4000);
+      const totalAmount = itemTotal + shipping;
+
+      document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
+      document.getElementById('sumShipping').innerText = shipping.toLocaleString() + '원';
+      document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
+    }
+
+    async function submitOrder() {
+      if(currentItems.length === 0) return alert('주문할 상품을 담거나 불러와주세요.');
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const zipcode = document.getElementById('zipcode').value.trim();
+      const detailAddress = document.getElementById('detailAddress').value.trim();
+
+      if(!name) { alert('수령인 성함을 입력해주세요.'); document.getElementById('name').focus(); return; }
+      if(!phone) { alert('연락처를 입력해주세요.'); document.getElementById('phone').focus(); return; }
+      if(!zipcode) { alert('주소 검색을 통해 우편번호와 주소를 입력해주세요.'); return; }
+      if(!detailAddress) { alert('상세주소를 입력해주세요.'); document.getElementById('detailAddress').focus(); return; }
+
+      let itemTotal = currentItems.reduce((acc, cur) => acc + (cur.price * cur.qty), 0);
+      let shipping = itemTotal >= 200000 ? 0 : 4000;
+      let totalAmount = itemTotal + shipping;
+
+      const payload = {
+        nickname: activeTab === 'live' ? document.getElementById('nickname').value : '직접주문',
+        name: name,
+        phone: phone,
+        zipcode: zipcode,
+        address: document.getElementById('address').value,
+        detailAddress: detailAddress,
+        items: currentItems,
+        totalPrice: totalAmount
+      };
+
+      localStorage.setItem('savedAddress', JSON.stringify(payload));
+      document.getElementById('loadingModal').style.display = 'flex';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        document.getElementById('loadingModal').style.display = 'none';
+        
+        if (result.success) {
+          alert(`🎉 주문이 정상 접수되었습니다!\n주문번호: ${result.orderNo}`);
+          location.reload();
+        } else {
+          alert('접수 중 오류가 발생했습니다.');
+        }
+      } catch (e) {
+        document.getElementById('loadingModal').style.display = 'none';
+        alert('네트워크 오류가 발생했습니다.');
+      }
+    }
+  </script>
+</body>
+</html>

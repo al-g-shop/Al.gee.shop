@@ -190,6 +190,7 @@
     let currentItems = [];
     let activeTab = 'direct';
     let selectedArea = 'normal';
+    let hasPaidShippingToday = false; // 오늘 이미 배송비를 낸 적이 있는지 여부
 
     function copyAccount() {
       navigator.clipboard.writeText("48710201326715").then(() => {
@@ -211,7 +212,6 @@
       renderCart();
     }
 
-    // 주소 검색 시 제주/도서산간 자동 감지 및 7,000원 선택
     function checkIslandAddress(addrText) {
       const keywords = ['제주', '울릉', '서귀포', '옹진', '완도군 청산면', '신안군'];
       const isIsland = keywords.some(k => addrText.includes(k));
@@ -240,9 +240,20 @@
           
           const fullAddr = (info.address || "") + " " + (info.detailAddress || "");
           checkIslandAddress(fullAddr);
-          
-          renderCart();
         }
+
+        const bundleRes = await fetch(`${API_URL}?action=checkBundleShipping&nickname=${encodeURIComponent(nickname)}`);
+        const bundleData = await bundleRes.json();
+        
+        // 오늘 이미 배송비를 낸 이력이 있다면 추가 주문은 배송비 0원
+        if (bundleData.hasPaidShipping) {
+          hasPaidShippingToday = true;
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 내역이 있습니다!\n오늘 추가 주문은 **배송비 0원(제품값만 결제)** 처리됩니다. 📦`);
+        } else {
+          hasPaidShippingToday = false;
+        }
+
+        renderCart();
       } catch (e) {
         console.error("고객 정보 조회 실패", e);
       }
@@ -270,7 +281,6 @@
           document.getElementById('address').value = roadAddr;
           
           checkIslandAddress(roadAddr + " " + (data.buildingName || ''));
-          
           document.getElementById('detailAddress').focus();
           renderCart();
         }
@@ -324,12 +334,17 @@
       renderCart();
     }
 
-    // 배송비 계산 (기본 4,000원 항상 표시, 15만 원 이상 무료, 제주/도서산간은 +3,000원 추가)
+    // 배송비 계산: 1) 오늘 이미 배송비를 냈거나 2) 현재 주문 금액이 15만 원 이상이면 배송비 0원 (단, 제주산간은 15만 원 미만일 때 기본 4천원 빠지고 도서산간 추가비 3천원만 남는 식)
     function calculateShipping(itemTotal) {
+      if (hasPaidShippingToday) {
+        return 0; // 오늘 이미 배송비를 냈다면 추가 주문은 배송비 0원
+      }
+
+      const isFreeEligible = itemTotal >= 150000;
       if (selectedArea === 'island') {
-        return itemTotal >= 150000 ? 3000 : 7000;
+        return isFreeEligible ? 3000 : 7000;
       } else {
-        return itemTotal >= 150000 ? 0 : 4000;
+        return isFreeEligible ? 0 : 4000;
       }
     }
 
@@ -360,13 +375,14 @@
       document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
       
       let shippingText = shipping.toLocaleString() + '원';
-      if (itemTotal >= 150000 && selectedArea === 'normal') {
+      if (hasPaidShippingToday) {
+        shippingText = '0원 (오늘 이미 배송비 지불 완료 🎁)';
+      } else if (itemTotal >= 150000 && selectedArea === 'normal') {
         shippingText = '0원 (15만 원 이상 무료)';
       } else if (itemTotal >= 150000 && selectedArea === 'island') {
         shippingText = '3,000원 (도서산간 추가비)';
       }
       document.getElementById('sumShipping').innerText = shippingText;
-      
       document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
     }
 
@@ -409,7 +425,8 @@
         address: address,
         detailAddress: detailAddress,
         items: finalItems,
-        totalPrice: totalAmount
+        totalPrice: totalAmount,
+        isBundle: hasPaidShippingToday
       };
 
       document.getElementById('loadingModal').style.display = 'flex';

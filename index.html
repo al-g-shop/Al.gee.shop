@@ -40,6 +40,9 @@
     .flex-row { display: flex; gap: 8px; }
     .flex-row input { flex: 1; }
     .flex-row button { width: auto; white-space: nowrap; }
+
+    /* 계좌번호 안내 박스 스타일 */
+    .bank-box { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 12px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -62,7 +65,7 @@
 
   <!-- 2. 직접 상품 추가 -->
   <div class="section">
-    <label for="productSelect">상품 직접 추가</label>
+    <label for="productSelect">상품 직접 추가 (직접입력 주문)</label>
     <div class="flex-row">
       <select id="productSelect">
         <option value="">상품을 선택하세요</option>
@@ -78,9 +81,15 @@
     <div class="total-price" id="totalPrice">총 결제 금액: 0원</div>
   </div>
 
-  <!-- 4. 배송지 및 주문자 정보 -->
+  <!-- 4. 계좌번호 안내 및 배송지 정보 입력 -->
   <form id="orderForm" onsubmit="submitOrder(event)">
     <div class="section">
+      <div class="bank-box">
+        <b>📢 무통장 입금 안내</b><br>
+        - 계좌번호: <b>[은행명 계좌번호 입력]</b> (예금주: 알지언니)<br>
+        - 주문 후 입금까지 완료되어야 정상 접수됩니다.
+      </div>
+
       <label for="nickname">주문자 닉네임</label>
       <input type="text" id="nickname" required>
 
@@ -240,3 +249,49 @@
       const p = productCatalog.find(item => item.id === id);
       return `${p.name}(${cart[id]}개)`;
     }).join(", ");
+
+    let totalAmount = 0;
+    keys.forEach(id => {
+      const p = productCatalog.find(item => item.id === id);
+      totalAmount += p.price * cart[id];
+    });
+
+    const payload = {
+      nickname: document.getElementById("nickname").value,
+      depositor: document.getElementById("depositor").value,
+      recipient: document.getElementById("recipient").value,
+      phone: document.getElementById("phone").value,
+      zipcode: document.getElementById("zipcode").value,
+      address1: document.getElementById("address1").value,
+      address2: document.getElementById("address2").value,
+      items: itemsSummary,
+      totalAmount: totalAmount
+    };
+
+    localStorage.setItem("algee_address", JSON.stringify({
+      recipient: payload.recipient,
+      phone: payload.phone,
+      zipcode: payload.zipcode,
+      address1: payload.address1,
+      address2: payload.address2
+    }));
+
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("submitBtn").textContent = "주문 처리 중...";
+
+    try {
+      await fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      alert("주문이 성공적으로 접수되었습니다!");
+      location.reload();
+    } catch(err) {
+      alert("주문 접수 중 오류가 발생했습니다.");
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("submitBtn").textContent = "주문 완료하기";
+    }
+  }
+</script>
+</body>
+</html>

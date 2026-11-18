@@ -131,7 +131,7 @@
     </div>
 
     <div class="card">
-      <h2>배송비 및 입금자 정보 입력</h2>
+      <h2>배송지 및 입금자 정보 입력</h2>
 
       <div class="nickname-box">
         <label for="nickname" style="font-size:15px; font-weight:bold; color:var(--primary); margin-bottom:6px; display:block;">🔴 유튜브 닉네임 (필수 작성)</label>
@@ -190,7 +190,7 @@
     let currentItems = [];
     let activeTab = 'direct';
     let selectedArea = 'normal';
-    let todayExistingTotal = 0; // 오늘 이미 주문한 금액 합계
+    let hasPaidShippingToday = false; // 오늘 이미 배송비를 낸 적이 있는지 여부
 
     function copyAccount() {
       navigator.clipboard.writeText("48710201326715").then(() => {
@@ -245,11 +245,11 @@
         const bundleRes = await fetch(`${API_URL}?action=checkBundleShipping&nickname=${encodeURIComponent(nickname)}`);
         const bundleData = await bundleRes.json();
         
-        if (bundleData.hasTodayOrder) {
-          todayExistingTotal = bundleData.existingOrderTotal;
-          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 주문하신 내역이 있습니다!\n이번 주문은 총합이 15만 원을 넘으므로, **기본 배송비 4,000원이 차감되어 상품가에서 할인 적용**됩니다. 📦`);
+        if (bundleData.hasPaidShipping) {
+          hasPaidShippingToday = true;
+          alert(`✨ [합배송 안내]\n\n${nickname} 닉네임으로 오늘 이미 배송비를 지불하신 주문이 있습니다!\n오늘 3번, 4번, 5번... 몇 번을 더 주문하시든 **배송비는 추가로 붙지 않고 0원(면제)**됩니다. 📦`);
         } else {
-          todayExistingTotal = 0;
+          hasPaidShippingToday = false;
         }
 
         renderCart();
@@ -333,15 +333,18 @@
       renderCart();
     }
 
-    // 스마트 배송비 계산 (15만 원 초과 시 배송비 자리에 -4,000원 차감 적용)
+    // 스마트 배송비 계산 (오늘 이미 배송비를 낸 적이 있다면 일반/제주산간 상관없이 무조건 0원 면제!)
     function calculateShipping(itemTotal) {
-      const combinedTotal = itemTotal + todayExistingTotal;
-      const isOver150k = combinedTotal >= 150000;
+      if (hasPaidShippingToday) {
+        return 0; // 지역 불문하고 추가 배송비 0원
+      }
 
+      // 첫 주문인 경우 (15만 원 이상 무료, 그 외 일반 4천원 / 제주산간 7천원)
+      const isFreeEligible = itemTotal >= 150000;
       if (selectedArea === 'island') {
-        return isOver150k ? 3000 : 7000;
+        return isFreeEligible ? 3000 : 7000;
       } else {
-        return isOver150k ? -4000 : 4000;
+        return isFreeEligible ? 0 : 4000;
       }
     }
 
@@ -368,17 +371,16 @@
 
       const shipping = calculateShipping(itemTotal);
       const totalAmount = itemTotal + shipping;
-      const combinedTotal = itemTotal + todayExistingTotal;
 
       document.getElementById('sumItem').innerText = itemTotal.toLocaleString() + '원';
       
       let shippingText = shipping.toLocaleString() + '원';
-      if (todayExistingTotal > 0 && combinedTotal >= 150000 && selectedArea === 'normal') {
-        shippingText = '-4,000원 (앞서 낸 배송비 차감 적용 🎁)';
+      if (hasPaidShippingToday) {
+        shippingText = '0원 (오늘 이미 배송비 지불 완료 🎁)';
       } else if (itemTotal >= 150000 && selectedArea === 'normal') {
         shippingText = '0원 (15만 원 이상 무료)';
-      } else if (combinedTotal >= 150000 && selectedArea === 'island') {
-        shippingText = '-1,000원 (도서산간비 3천원 - 첫배송비 4천원 차감)';
+      } else if (itemTotal >= 150000 && selectedArea === 'island') {
+        shippingText = '3,000원 (도서산간 추가비)';
       }
       document.getElementById('sumShipping').innerText = shippingText;
       document.getElementById('sumTotal').innerText = totalAmount.toLocaleString() + '원';
@@ -404,10 +406,10 @@
       let totalAmount = itemTotal + shipping;
 
       const finalItems = [...currentItems];
-      if (shipping !== 0) {
+      if (shipping > 0) {
         finalItems.push({ 
           code: '배송비', 
-          name: shipping < 0 ? '합배송 이전 배송비 차감' : (selectedArea === 'island' ? '제주/도서산간 추가배송비' : '기본 배송비'), 
+          name: selectedArea === 'island' ? '제주/도서산간 추가배송비' : '기본 배송비', 
           color: '', 
           size: '', 
           price: shipping, 
@@ -424,7 +426,7 @@
         detailAddress: detailAddress,
         items: finalItems,
         totalPrice: totalAmount,
-        isBundle: todayExistingTotal > 0
+        isBundle: hasPaidShippingToday
       };
 
       document.getElementById('loadingModal').style.display = 'flex';
